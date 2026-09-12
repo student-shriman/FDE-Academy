@@ -1,0 +1,489 @@
+import React, { useState } from 'react';
+import { 
+  Lock, 
+  Mail, 
+  Phone, 
+  ArrowRight, 
+  ShieldCheck, 
+  Sparkles, 
+  UserPlus, 
+  LogIn, 
+  AlertCircle,
+  CheckCircle2
+} from 'lucide-react';
+import { apiSignIn, apiSignUp } from '../services/api';
+
+const COUNTRY_CODES = [
+  { code: '+91', country: 'India', flag: '🇮🇳' },
+  { code: '+1', country: 'USA / Canada', flag: '🇺🇸' },
+  { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
+  { code: '+61', country: 'Australia', flag: '🇦🇺' },
+  { code: '+971', country: 'UAE', flag: '🇦🇪' },
+  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+  { code: '+49', country: 'Germany', flag: '🇩🇪' },
+  { code: '+33', country: 'France', flag: '🇫🇷' },
+  { code: '+81', country: 'Japan', flag: '🇯🇵' },
+  { code: '+41', country: 'Switzerland', flag: '🇨🇭' },
+  { code: '+31', country: 'Netherlands', flag: '🇳🇱' },
+  { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' },
+  { code: '+353', country: 'Ireland', flag: '🇮🇪' },
+  { code: '+86', country: 'China', flag: '🇨🇳' },
+  { code: '+55', country: 'Brazil', flag: '🇧🇷' },
+  { code: '+27', country: 'South Africa', flag: '🇿🇦' },
+  { code: 'custom', country: 'Custom Code', flag: '🌐' }
+];
+
+export default function Login({ onLogin }) {
+  const [isSignUp, setIsSignUp] = useState(false);
+  
+  // Registration Type: 'gmail' or 'phone'
+  const [signupMethod, setSignupMethod] = useState('gmail');
+
+  // Form Fields (Clean initial state - no dummy or instant data)
+  const [name, setName] = useState('');
+  const [gmail, setGmail] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [customCode, setCustomCode] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Sign In Fields
+  const [loginIdentifier, setLoginIdentifier] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+
+  // Status & Notifications
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Compute full phone representation
+  const activeCountryCode = countryCode === 'custom' 
+    ? (customCode ? (customCode.startsWith('+') ? customCode : `+${customCode}`) : '+') 
+    : countryCode;
+  
+  const cleanPhoneDigits = phoneNumber.replace(/[\s\-\(\)]/g, '');
+  const formattedFullPhone = activeCountryCode && cleanPhoneDigits 
+    ? `${activeCountryCode} ${cleanPhoneDigits}` 
+    : '';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      if (isSignUp) {
+        if (!name.trim()) {
+          throw new Error('Please enter your full name.');
+        }
+
+        if (password.length < 6) {
+          throw new Error('Password must be at least 6 characters long.');
+        }
+
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match. Please re-enter.');
+        }
+
+        let payload = {
+          name: name.trim(),
+          auth_type: signupMethod,
+          password
+        };
+
+        if (signupMethod === 'gmail') {
+          const trimmedGmail = gmail.trim().toLowerCase();
+          if (!trimmedGmail) {
+            throw new Error('Please enter your Gmail address.');
+          }
+          if (!/^[a-zA-Z0-9._%+-]+@(?:gmail\.com|googlemail\.com)$/.test(trimmedGmail)) {
+            throw new Error('Sign up requires a valid Gmail address (e.g. name@gmail.com).');
+          }
+          payload.email = trimmedGmail;
+          payload.identifier = trimmedGmail;
+        } else {
+          // Phone validation
+          if (!cleanPhoneDigits) {
+            throw new Error('Please enter your phone number.');
+          }
+          if (!activeCountryCode || activeCountryCode === '+' || !/^\+[1-9]\d{0,4}$/.test(activeCountryCode)) {
+            throw new Error('Please provide a valid international country code (e.g. +91, +1, +44).');
+          }
+          if (cleanPhoneDigits.length < 6 || cleanPhoneDigits.length > 14) {
+            throw new Error('Please enter a valid phone number (6 to 14 digits).');
+          }
+          
+          const fullPhone = `${activeCountryCode}${cleanPhoneDigits}`;
+          payload.phone = fullPhone;
+          payload.identifier = fullPhone;
+          payload.country_code = activeCountryCode;
+          payload.phone_number = cleanPhoneDigits;
+        }
+
+        const registeredUser = await apiSignUp(payload);
+        
+        // As required: No automatic sign in. Switch to Sign In tab and require password.
+        setSuccessMessage(`Account created successfully for ${registeredUser.name}! Please enter your password to sign in.`);
+        setIsSignUp(false);
+        setLoginIdentifier(payload.identifier);
+        setLoginPassword('');
+        setPassword('');
+        setConfirmPassword('');
+      } else {
+        // Sign In
+        const trimmedIdent = loginIdentifier.trim();
+        if (!trimmedIdent) {
+          throw new Error('Please enter your Gmail address or registered phone number.');
+        }
+        if (!loginPassword) {
+          throw new Error('Please enter your password.');
+        }
+
+        const user = await apiSignIn(trimmedIdent, loginPassword);
+        onLogin(user);
+      }
+    } catch (err) {
+      setError(err.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+      
+      {/* Ambient background glow */}
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="max-w-md w-full relative z-10">
+        
+        {/* Header Branding */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5" />
+            Academy Student Portal
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            FDE Academy
+          </h1>
+          <p className="mt-2 text-xs sm:text-sm text-slate-400">
+            {isSignUp 
+              ? 'Register with your Gmail ID or Mobile Phone to track curriculum coverage.'
+              : 'Sign in to sync your topic coverage and chapters with SQLite.'}
+          </p>
+        </div>
+
+        {/* Card Container */}
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm space-y-6">
+          
+          {/* Sign In vs Sign Up Tabs */}
+          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button
+              type="button"
+              onClick={() => { setIsSignUp(false); setError(''); }}
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                !isSignUp 
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setIsSignUp(true); setError(''); setSuccessMessage(''); }}
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                isSignUp 
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>Create Account</span>
+            </button>
+          </div>
+
+          {/* Success Banner */}
+          {successMessage && (
+            <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs flex items-start gap-2.5">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
+              <span className="leading-relaxed font-medium">{successMessage}</span>
+            </div>
+          )}
+
+          {/* Error Banner */}
+          {error && (
+            <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+              <span className="leading-relaxed">{error}</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            
+            {/* --- SIGN UP FLOW --- */}
+            {isSignUp ? (
+              <>
+                {/* Full Name */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter your full name"
+                    required
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                  />
+                </div>
+
+                {/* Sign up identifier selector: Gmail vs Phone */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    Registration Method
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => { setSignupMethod('gmail'); setError(''); }}
+                      className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                        signupMethod === 'gmail'
+                          ? 'bg-amber-500/15 border-amber-500 text-amber-400'
+                          : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      <span>Gmail ID</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => { setSignupMethod('phone'); setError(''); }}
+                      className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                        signupMethod === 'phone'
+                          ? 'bg-amber-500/15 border-amber-500 text-amber-400'
+                          : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>Phone Number</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Method 1: Gmail Input */}
+                {signupMethod === 'gmail' ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                        Gmail ID
+                      </label>
+                      <span className="text-[11px] text-amber-400 font-medium">
+                        Must be @gmail.com
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <Mail className="w-4 h-4" />
+                      </div>
+                      <input
+                        type="email"
+                        value={gmail}
+                        onChange={(e) => setGmail(e.target.value)}
+                        placeholder="yourname@gmail.com"
+                        required
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  /* Method 2: Phone with Country Code */
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                        Phone with Country Code
+                      </label>
+                      <span className="text-[11px] text-amber-400 font-medium">
+                        International Code Required
+                      </span>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      {/* Country Code Selector */}
+                      <div className="w-36 shrink-0">
+                        <select
+                          value={countryCode}
+                          onChange={(e) => setCountryCode(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition-colors cursor-pointer"
+                        >
+                          {COUNTRY_CODES.map((item) => (
+                            <option key={item.code} value={item.code} className="bg-slate-900 text-white">
+                              {item.flag} {item.code} ({item.country})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Custom Code Input if selected */}
+                      {countryCode === 'custom' && (
+                        <div className="w-20 shrink-0">
+                          <input
+                            type="text"
+                            value={customCode}
+                            onChange={(e) => setCustomCode(e.target.value)}
+                            placeholder="+..."
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 text-center"
+                          />
+                        </div>
+                      )}
+
+                      {/* Phone digits */}
+                      <div className="flex-1 relative">
+                        <input
+                          type="tel"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          placeholder="e.g. 9876543210"
+                          required
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Live formatted preview */}
+                    {formattedFullPhone && (
+                      <div className="mt-1.5 text-[11px] text-slate-400 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        <span>Registered format: <strong className="text-slate-200 font-mono">{activeCountryCode}{cleanPhoneDigits}</strong></span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Password */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Create Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="At least 6 characters"
+                      required
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                {/* Confirm Password */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Re-enter your password"
+                      required
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              /* --- SIGN IN FLOW --- */
+              <>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Gmail ID or Phone Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      value={loginIdentifier}
+                      onChange={(e) => setLoginIdentifier(e.target.value)}
+                      placeholder="e.g. name@gmail.com or +91 9876543210"
+                      required
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Use your registered Gmail or phone number with country code.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+            >
+              {loading ? (
+                <span>Connecting to SQLite database...</span>
+              ) : isSignUp ? (
+                <>
+                  <span>Create Account & Register</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  <span>Sign In & Load Progress</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+        </div>
+
+        {/* Persistent Database notice */}
+        <div className="mt-8 text-center flex items-center justify-center gap-2 text-xs text-slate-500">
+          <ShieldCheck className="w-4 h-4 text-emerald-500" />
+          <span>Accounts & progress stored securely in SQLite `curriculum.db`</span>
+        </div>
+
+      </div>
+    </div>
+  );
+}

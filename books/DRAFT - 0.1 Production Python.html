@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+pre { line-height: 125%; }
+td.linenos .normal { color: #666666; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #666666; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #ffffcc }
+.codehilite { background: #f0f0f0; }
+.codehilite .c { color: #60A0B0; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #F00 } /* Error */
+.codehilite .k { color: #007020; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666 } /* Operator */
+.codehilite .ch { color: #60A0B0; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #60A0B0; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #007020 } /* Comment.Preproc */
+.codehilite .cpf { color: #60A0B0; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #60A0B0; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #60A0B0; background-color: #FFF0F0 } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #F00 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #00A000 } /* Generic.Inserted */
+.codehilite .go { color: #888 } /* Generic.Output */
+.codehilite .gp { color: #C65D09; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #04D } /* Generic.Traceback */
+.codehilite .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #007020 } /* Keyword.Pseudo */
+.codehilite .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #902000 } /* Keyword.Type */
+.codehilite .m { color: #40A070 } /* Literal.Number */
+.codehilite .s { color: #4070A0 } /* Literal.String */
+.codehilite .na { color: #4070A0 } /* Name.Attribute */
+.codehilite .nb { color: #007020 } /* Name.Builtin */
+.codehilite .nc { color: #0E84B5; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #60ADD5 } /* Name.Constant */
+.codehilite .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.codehilite .ni { color: #D55537; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #007020 } /* Name.Exception */
+.codehilite .nf { color: #06287E } /* Name.Function */
+.codehilite .nl { color: #002070; font-weight: bold } /* Name.Label */
+.codehilite .nn { color: #0E84B5; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #BB60D5 } /* Name.Variable */
+.codehilite .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #BBB } /* Text.Whitespace */
+.codehilite .mb { color: #40A070 } /* Literal.Number.Bin */
+.codehilite .mf { color: #40A070 } /* Literal.Number.Float */
+.codehilite .mh { color: #40A070 } /* Literal.Number.Hex */
+.codehilite .mi { color: #40A070 } /* Literal.Number.Integer */
+.codehilite .mo { color: #40A070 } /* Literal.Number.Oct */
+.codehilite .sa { color: #4070A0 } /* Literal.String.Affix */
+.codehilite .sb { color: #4070A0 } /* Literal.String.Backtick */
+.codehilite .sc { color: #4070A0 } /* Literal.String.Char */
+.codehilite .dl { color: #4070A0 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #4070A0; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #4070A0 } /* Literal.String.Double */
+.codehilite .se { color: #4070A0; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #4070A0 } /* Literal.String.Heredoc */
+.codehilite .si { color: #70A0D0; font-style: italic } /* Literal.String.Interpol */
+.codehilite .sx { color: #C65D09 } /* Literal.String.Other */
+.codehilite .sr { color: #235388 } /* Literal.String.Regex */
+.codehilite .s1 { color: #4070A0 } /* Literal.String.Single */
+.codehilite .ss { color: #517918 } /* Literal.String.Symbol */
+.codehilite .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #06287E } /* Name.Function.Magic */
+.codehilite .vc { color: #BB60D5 } /* Name.Variable.Class */
+.codehilite .vg { color: #BB60D5 } /* Name.Variable.Global */
+.codehilite .vi { color: #BB60D5 } /* Name.Variable.Instance */
+.codehilite .vm { color: #BB60D5 } /* Name.Variable.Magic */
+.codehilite .il { color: #40A070 } /* Literal.Number.Integer.Long */
+
+@page {
+    size: 6.14in 9.21in;
+    margin: 0.85in 0.75in 0.95in 0.75in;
+    @top-center {
+        content: string(chaptertitle);
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 8pt;
+        color: #888;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    @bottom-center {
+        content: counter(page);
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 9pt;
+        color: #555;
+    }
+}
+@page :first {
+    @top-center { content: none; }
+    @bottom-center { content: none; }
+}
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 10.3pt;
+    line-height: 1.55;
+    color: #1a1a1a;
+}
+h1, h2, h3 {
+    font-family: Helvetica, Arial, sans-serif;
+    color: #10233d;
+}
+.cover {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    page-break-after: always;
+}
+.cover-kicker {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9.5pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #B5812F;
+    margin-bottom: 0.6in;
+}
+.cover-title {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 30pt;
+    font-weight: 700;
+    color: #10233d;
+    margin: 0 0 0.3in 0;
+    line-height: 1.15;
+}
+.cover-sub {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 13pt;
+    color: #444;
+    max-width: 4in;
+}
+.cover-meta {
+    margin-top: 0.6in;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    color: #888;
+}
+.toc { page-break-after: always; }
+.toc h1 { font-size: 20pt; border-bottom: 2px solid #10233d; padding-bottom: 0.15in; }
+.toc ul { list-style: none; padding: 0; }
+.toc li { margin: 0.12in 0; font-size: 11pt; }
+.toc a { color: #10233d; text-decoration: none; }
+
+.chapter { page-break-before: always; }
+.chapter-number {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #B5812F;
+    margin-bottom: 0.05in;
+}
+.chapter h1 {
+    font-size: 19pt;
+    border-bottom: 2px solid #10233d;
+    padding-bottom: 0.12in;
+    margin-top: 0;
+}
+.track {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 7.5pt;
+    font-weight: normal;
+    padding: 2px 8px;
+    border-radius: 9px;
+    vertical-align: middle;
+    margin-left: 0.15in;
+}
+.track-core { background: #DCEBFB; color: #2F5F9E; }
+.track-mandatory { background: #FDE9C8; color: #B5812F; }
+
+h2, h3 { font-size: 12.5pt; margin-top: 0.28in; margin-bottom: 0.08in; }
+.points { margin: 0.05in 0 0.15in 0; padding-left: 0.25in; }
+.points li { margin-bottom: 0.07in; }
+
+figure { margin: 0.2in 0; text-align: center; page-break-inside: avoid; }
+figure img { max-width: 100%; max-height: 3.6in; }
+figcaption { font-family: Helvetica, Arial, sans-serif; font-size: 8pt; color: #777; font-style: italic; margin-top: 0.05in; }
+
+.codeblock {
+    background: #fbfaf8;
+    border: 1px solid #e3e0d8;
+    border-radius: 5px;
+    padding: 0.12in 0.15in;
+    margin: 0.15in 0;
+    font-size: 8.3pt;
+    page-break-inside: avoid;
+    overflow-wrap: break-word;
+}
+.codeblock pre { margin: 0; white-space: pre-wrap; font-family: "Menlo", "Consolas", monospace; }
+
+.checklist { background: #eef6ef; border-left: 3px solid #3F7A4C; padding: 0.1in 0.2in; margin: 0.2in 0; page-break-inside: avoid; }
+.checklist h3 { margin-top: 0; color: #245530; }
+.checklist ul { list-style: none; padding-left: 0.1in; }
+.checklist li { margin-bottom: 0.08in; }
+
+.pitfalls { background: #fbeeec; border-left: 3px solid #C1503F; padding: 0.1in 0.2in; margin: 0.2in 0; page-break-inside: avoid; }
+.pitfalls h3 { margin-top: 0; color: #8f3527; }
+.pitfalls li { margin-bottom: 0.08in; }
+
+table { border-collapse: collapse; width: 100%; margin: 0.15in 0; font-size: 9pt; }
+th, td { border: 1px solid #ccc; padding: 0.05in 0.08in; text-align: left; }
+th { background: #f0f0f0; }
+
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="cover-kicker">FDE Academy &middot; Phase P0 &middot; FDE Foundations &amp; Engineering Baseline</div>
+  <h1 class="cover-title">Production Python</h1>
+  <div class="cover-sub">A hands-on guide to production python for production AI systems</div>
+  <div class="cover-meta">11 chapters &middot; Week 1</div>
+</section>
+
+<section class='toc'><h1>Contents</h1><ul><li><a href='#chapter-1'>1. AsyncIO and async/await</a></li><li><a href='#chapter-2'>2. Concurrency vs parallelism</a></li><li><a href='#chapter-3'>3. Multiprocessing, threading, queues, semaphores</a></li><li><a href='#chapter-4'>4. Connection pooling</a></li><li><a href='#chapter-5'>5. Context managers, type hints, generics</a></li><li><a href='#chapter-6'>6. Pydantic and dependency injection</a></li><li><a href='#chapter-7'>7. Configuration management</a></li><li><a href='#chapter-8'>8. Structured logging</a></li><li><a href='#chapter-9'>9. Exception architecture</a></li><li><a href='#chapter-10'>10. Retries and timeouts</a></li><li><a href='#chapter-11'>11. Async Client Disconnection &amp; Inference Cancellation</a></li></ul></section>
+<section class='chapter' id='chapter-1'><div class='chapter-number'>Chapter 1</div><h1 style='string-set: chaptertitle "AsyncIO and async/await"'>AsyncIO and async/await <span class='track track-core'>Core</span></h1><ul class='points'><li>async def defines a coroutine function; calling it returns a coroutine object, it does not run the body immediately.</li><li>await suspends the current coroutine and hands control back to the event loop until the awaited thing (another coroutine, a socket read, a sleep) is ready.</li><li>The event loop is a single-threaded scheduler. It runs whichever coroutine is ready and switches away the moment one awaits something that isn&#x27;t ready yet.</li><li>asyncio.gather(*coros) runs coroutines concurrently and waits for all of them.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">] starting, will take </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">] done"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">fetch</span><span class="p">(</span><span class="s2">"a"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fetch</span><span class="p">(</span><span class="s2">"b"</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fetch</span><span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"results:"</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"elapsed: </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s (would be ~3s if run sequentially)"</span><span class="p">)</span>
+
+<span class="k">await</span> <span class="n">main</span><span class="p">()</span>  <span class="c1"># in a .py script use: asyncio.run(main())</span>
+</pre></div>
+</div><figure><img src='file:///Users/shriman/Desktop/FDE Academy/P0 - FDE Foundations & Engineering Baseline/03 - 0.1 Production Python/images/asyncio-event-loop.png'><figcaption>Sequential vs concurrent execution timeline</figcaption></figure><ul class='points'><li>All three fetch() calls start almost immediately, then sleep concurrently, so total elapsed time is ~1s instead of ~3s.</li><li>In a real service, &#x27;await asyncio.sleep()&#x27; is standing in for any I/O wait: a DB query, an HTTP call to an LLM provider, a file read.</li><li>Rule of thumb: async helps when you are waiting on I/O, not when you are burning CPU. CPU-bound work still blocks the single event-loop thread unless offloaded (see the Concurrency vs parallelism notebook).</li></ul><h3>Cancellation</h3><ul class='points'><li>Any running task can be cancelled with task.cancel() -- this raises asyncio.CancelledError inside the coroutine at its next suspension point (the next &#x27;await&#x27;), not instantly.</li><li>A coroutine SHOULD let CancelledError propagate (or re-raise after cleanup) rather than swallowing it -- catching it silently makes the task look &#x27;done&#x27; when it was actually cancelled, which hides bugs.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">long_running_job</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"job: starting a long operation..."</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>   <span class="c1"># would take 10s if allowed to finish</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"job: finished (you should not see this)"</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"job: cleanup on cancellation (closing a connection, etc.)"</span><span class="p">)</span>
+        <span class="k">raise</span>   <span class="c1"># re-raise so the caller/task correctly sees this as cancelled, not completed</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">long_running_job</span><span class="p">())</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>      <span class="c1"># let it start</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">task</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"main: confirmed the task was cancelled"</span><span class="p">)</span>
+
+<span class="k">await</span> <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div><ul class='points'><li>Notice the job only gets as far as its cleanup branch -- the 10s sleep never completes, and re-raising CancelledError means &#x27;await task&#x27; in main() also sees it as cancelled (not as a normal return value).</li><li>This is the general-purpose version of the pattern; the &#x27;Async Client Disconnection and Inference Cancellation&#x27; notebook later in this topic applies the exact same idea to a real production case: cancelling an upstream LLM call when an HTTP client disconnects mid-stream.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Replace asyncio.sleep with a real async HTTP call (httpx.AsyncClient) to a public API and time 3 concurrent calls vs 3 sequential ones.</li><li>&#9744;&nbsp; Build a tiny FastAPI endpoint that awaits 2 slow calls with asyncio.gather instead of one after another.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Calling a blocking function (requests.get, time.sleep, a sync DB driver) inside an async def -- this blocks the ENTIRE event loop, freezing every other coroutine too.</li><li>Forgetting to await a coroutine -- Python just creates a coroutine object and warns &#x27;coroutine was never awaited&#x27;, the code inside never runs.</li><li>Assuming asyncio.gather magically uses multiple CPU cores -- it doesn&#x27;t; it&#x27;s concurrency on one thread, not parallelism (next notebook).</li></ul></div></section><section class='chapter' id='chapter-2'><div class='chapter-number'>Chapter 2</div><h1 style='string-set: chaptertitle "Concurrency vs parallelism"'>Concurrency vs parallelism <span class='track track-core'>Core</span></h1><ul class='points'><li>Concurrency: structuring a program so multiple tasks can make progress by interleaving (asyncio, one thread, cooperative switching on I/O waits).</li><li>Parallelism: tasks literally executing at the same instant on multiple CPU cores (multiprocessing, or native threads for non-Python/C-extension work).</li><li>Python&#x27;s GIL (Global Interpreter Lock) means only one thread runs Python bytecode at a time, so threading gives concurrency for I/O-bound work but not parallelism for CPU-bound work.</li><li>Decision rule: * I/O-bound (network, disk, waiting on external services)  -&gt; asyncio or threads * CPU-bound (parsing, hashing, embedding math, image work)  -&gt; multiprocessing</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">ProcessPoolExecutor</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cpu_bound_work</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">i</span>
+    <span class="k">return</span> <span class="n">total</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">5_000_000</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="nb">list</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">cpu_bound_work</span><span class="p">,</span> <span class="p">[</span><span class="n">N</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"threads (CPU-bound): </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="nb">list</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">cpu_bound_work</span><span class="p">,</span> <span class="p">[</span><span class="n">N</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"processes (CPU-bound): </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+</pre></div>
+</div><ul class='points'><li>Expect the ThreadPoolExecutor run to be about as slow as running everything on one thread (the GIL serializes the Python bytecode), while ProcessPoolExecutor actually uses multiple cores and finishes faster for this CPU-bound loop -- when it runs at all (see the note below).</li><li>Flip the workload to something I/O-bound (e.g. requests with network calls or asyncio.sleep) and threads/async win instead, because the GIL is released while waiting on I/O.</li><li>IMPORTANT -- if the ProcessPoolExecutor cell raised a RuntimeError about &#x27;bootstrapping phase&#x27; / BrokenProcessPool: on macOS and Windows, multiprocessing defaults to the &#x27;spawn&#x27; start method, which re-imports your main module in each child process. A worker function defined directly in a notebook cell (or an unguarded script) can&#x27;t be re-imported that way, and process creation fails. Fix: move cpu_bound_work into its own real .py file and import it, or run the ProcessPoolExecutor code from a script guarded with: if __name__ == &#x27;__main__&#x27;: ... ThreadPoolExecutor doesn&#x27;t have this problem -- threads share the same process, no re-import needed, which is one more reason threads are simpler to reach for even though they don&#x27;t give you parallelism for CPU-bound work.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Rerun the demo with a genuinely I/O-bound function (e.g. time.sleep or a real network call) instead of cpu_bound_work, and confirm threads now win.</li><li>&#9744;&nbsp; Profile one real function in your own codebase -- is it actually CPU-bound or I/O-bound? Pick the matching concurrency tool.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Reaching for multiprocessing by default &#x27;for speed&#x27; on I/O-bound work -- processes have real overhead (separate memory, serialization to pass data) that isn&#x27;t worth paying when the bottleneck is waiting on a network call.</li><li>Assuming more threads always helps -- past a point, GIL contention and context-switch overhead make CPU-bound threaded code slower, not faster.</li><li>Defining a ProcessPoolExecutor&#x27;s worker function inside a notebook/script&#x27;s main scope on macOS/Windows -- the &#x27;spawn&#x27; start method needs to re-import it in each child process, which fails for anything not defined in a real, importable module.</li></ul></div></section><section class='chapter' id='chapter-3'><div class='chapter-number'>Chapter 3</div><h1 style='string-set: chaptertitle "Multiprocessing, threading, queues, semaphores"'>Multiprocessing, threading, queues, semaphores <span class='track track-core'>Core</span></h1><h3>Queues and Semaphores</h3><ul class='points'><li>A Queue is the standard way to hand work safely between producers and consumer workers (threads, processes, or asyncio tasks) without shared-state races.</li><li>A Semaphore bounds how many coroutines/threads may enter a critical section at once, e.g. &#x27;never more than 5 concurrent calls to the LLM provider&#x27;.</li><li>This is exactly how you protect a downstream dependency (DB, external API, GPU) from being overwhelmed by a burst of concurrent requests.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="n">MAX_CONCURRENT_CALLS</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="n">MAX_CONCURRENT_CALLS</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_llm</span><span class="p">(</span><span class="n">request_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"request </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2">: calling model..."</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"request </span><span class="si">{</span><span class="n">request_id</span><span class="si">}</span><span class="s2">: done"</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">call_llm</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
+
+<span class="k">await</span> <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div><ul class='points'><li>Even though 10 requests arrive at once, at most 3 are ever &quot;in flight&quot; against the (simulated) model provider at the same time -- the rest wait their turn at the semaphore.</li><li>In production this is how you cap concurrent calls to a rate-limited or expensive backend (an LLM API, a GPU inference server, a connection pool -- see the Connection Pooling notebook).</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+<span class="n">work_queue</span><span class="p">:</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">work_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s2">"job-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">worker</span><span class="p">(</span><span class="n">worker_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">work_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"worker </span><span class="si">{</span><span class="n">worker_id</span><span class="si">}</span><span class="s2"> processing </span><span class="si">{</span><span class="n">job</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">work_queue</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
+
+<span class="n">threads</span> <span class="o">=</span> <span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"all jobs processed"</span><span class="p">)</span>
+</pre></div>
+</div><ul class='points'><li>A thread-safe queue.Queue lets multiple worker threads pull jobs safely without any manual locking -- the queue itself handles the synchronization.</li><li>multiprocessing.Queue works the same way across process boundaries (with the extra cost of pickling data to send it between processes) -- reach for it when your workers are separate processes, not threads.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Rewrite the queue example using multiprocessing.Queue and multiprocessing.Process instead of threading, and confirm it still works.</li><li>&#9744;&nbsp; Add a semaphore in front of a real outbound call in one of your own scripts, and verify (with prints/logging) that concurrency is actually capped.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Forgetting task_done() -- queue.join() (if used) will hang forever waiting for acknowledgements that never come.</li><li>Sizing a semaphore/pool by guesswork instead of the downstream service&#x27;s actual documented concurrency limit -- too high still overwhelms it, too low leaves throughput on the table.</li></ul></div></section><section class='chapter' id='chapter-4'><div class='chapter-number'>Chapter 4</div><h1 style='string-set: chaptertitle "Connection pooling"'>Connection pooling <span class='track track-core'>Core</span></h1><ul class='points'><li>Opening a new DB/HTTP connection per request is expensive (TCP handshake, TLS, auth). A pool keeps a small set of connections open and hands them out on demand.</li><li>Pool sizing matters: too small -&gt; requests queue and add latency; too large -&gt; you exhaust the database&#x27;s max_connections or the remote service&#x27;s rate limits.</li><li>When the pool is exhausted, callers should wait with a bounded timeout, not block forever -- surface a clear 503/&#x27;pool exhausted&#x27; error instead of hanging requests.</li></ul><figure><img src='file:///Users/shriman/Desktop/FDE Academy/P0 - FDE Foundations & Engineering Baseline/03 - 0.1 Production Python/images/connection-pool.png'><figcaption>Connection pool diagram: 5 requests, a wait queue, 2 connections, a database</figcaption></figure><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FakeConnection</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn_id</span> <span class="o">=</span> <span class="n">conn_id</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"conn-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">conn_id</span><span class="si">}</span><span class="s2"> ran: </span><span class="si">{</span><span class="n">sql</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SimplePool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">[</span><span class="n">FakeConnection</span><span class="p">]</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">FakeConnection</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FakeConnection</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="n">FakeConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_query</span><span class="p">(</span><span class="n">pool</span><span class="p">:</span> <span class="n">SimplePool</span><span class="p">,</span> <span class="n">sql</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">release</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">SimplePool</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">run_query</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"SELECT </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)))</span>
+
+<span class="k">await</span> <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div><ul class='points'><li>Only 2 FakeConnections exist, so with 5 concurrent queries, requests 3-5 wait for a connection to be released before they can run -- exactly the queuing behaviour a real pool (SQLAlchemy&#x27;s QueuePool, asyncpg&#x27;s Pool) gives you, just made explicit here.</li><li>The try/finally guarantees the connection always goes back to the pool, even if the query raises -- a leaked connection is a slow, silent way to take a service down.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Install asyncpg or use SQLAlchemy&#x27;s async engine against a real (or Dockerized) Postgres, and inspect its pool size/overflow settings.</li><li>&#9744;&nbsp; Deliberately set pool size to 1 and fire 3 concurrent requests -- observe the queuing delay, then fix it by right-sizing the pool.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Not setting a timeout on acquire() -- if every connection is stuck (e.g. a slow query upstream), new requests will queue forever with no visible error.</li><li>Sizing the pool without checking the database&#x27;s own max_connections -- if you run multiple app instances, (instances x pool_size) must stay under that ceiling.</li></ul></div></section><section class='chapter' id='chapter-5'><div class='chapter-number'>Chapter 5</div><h1 style='string-set: chaptertitle "Context managers, type hints, generics"'>Context managers, type hints, generics <span class='track track-core'>Core</span></h1><ul class='points'><li>A context manager guarantees setup/teardown (acquire/release, open/close) runs even if an exception is raised in between -- &#x27;with&#x27; is safer than manual try/finally scattered everywhere.</li><li>Type hints turn implicit assumptions (&#x27;this returns a list of users&#x27;) into something a type checker (mypy/pyright) and your editor can verify.</li><li>Generics (TypeVar) let one function/class be correctly typed for many concrete types, instead of writing the same repository class once per model.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">timed_block</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">timed_block</span><span class="p">(</span><span class="s2">"sleep-ish work"</span><span class="p">):</span>
+    <span class="nb">sum</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">))</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Repository</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">)</span>
+
+<span class="n">user_repo</span><span class="p">:</span> <span class="n">Repository</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Repository</span><span class="p">()</span>
+<span class="n">user_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">"shriman@example.com"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">user_repo</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+</pre></div>
+</div><ul class='points'><li>&#x27;Repository[str]&#x27; is the same class reused for any model type -- a type checker will flag &#x27;user_repo.add(123)&#x27; as an error, catching a bug before it ever runs.</li><li>The same Repository[T] pattern is exactly what you&#x27;ll reuse in Phase 3 for a real Postgres-backed repository layer.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Write your own context manager (using @contextmanager or a class with __enter__/__exit__) that opens and always closes a file, even on exception.</li><li>&#9744;&nbsp; Run mypy or pyright against a small script with a Generic[T] class and confirm it catches a type mismatch.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Putting code that can raise BEFORE the try in a manual context manager -- cleanup in the finally never runs if setup itself fails.</li><li>Adding type hints but never actually running a type checker in CI -- unchecked hints are just comments; they don&#x27;t catch anything on their own.</li></ul></div></section><section class='chapter' id='chapter-6'><div class='chapter-number'>Chapter 6</div><h1 style='string-set: chaptertitle "Pydantic and dependency injection"'>Pydantic and dependency injection <span class='track track-core'>Core</span></h1><ul class='points'><li>Pydantic models validate untrusted input (request bodies, config, tool-call arguments) at the boundary, and raise a clear error instead of letting bad data drift deeper into the system.</li><li>Dependency injection means a function/class receives its collaborators (a DB session, an HTTP client, a settings object) from the outside instead of constructing them itself -- this is what makes services swappable and testable (inject a fake in tests).</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">field_validator</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CreateUserRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"email"</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">email_must_look_valid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"@"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"not a valid email"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"age"</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">must_be_adult</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mi">18</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"user must be 18+"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+<span class="c1"># valid</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">CreateUserRequest</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="s2">"a@b.com"</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">25</span><span class="p">))</span>
+
+<span class="c1"># invalid -- raises pydantic.ValidationError with a precise, field-level error message</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">CreateUserRequest</span><span class="p">(</span><span class="n">email</span><span class="o">=</span><span class="s2">"not-an-email"</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"validation failed as expected:</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+</pre></div>
+</div><ul class='points'><li>This uses a plain str + custom field_validator for the email check to avoid an extra dependency -- in a real FastAPI app, prefer &#x27;email: EmailStr&#x27; from pydantic, which does full RFC-compliant validation (requires the &#x27;email-validator&#x27; package installed alongside pydantic).</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Notifier</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[real notifier] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FakeNotifier</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sent</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SignupService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">notifier</span><span class="p">:</span> <span class="n">Notifier</span><span class="p">):</span>  <span class="c1"># injected, not constructed internally</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notifier</span> <span class="o">=</span> <span class="n">notifier</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">signup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_notifier</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">"welcome </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># production: SignupService(Notifier())</span>
+<span class="c1"># test:       SignupService(FakeNotifier())  &lt;- no real emails sent</span>
+<span class="n">fake</span> <span class="o">=</span> <span class="n">FakeNotifier</span><span class="p">()</span>
+<span class="n">SignupService</span><span class="p">(</span><span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">signup</span><span class="p">(</span><span class="s2">"a@b.com"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fake</span><span class="o">.</span><span class="n">sent</span><span class="p">)</span>
+</pre></div>
+</div><ul class='points'><li>FastAPI&#x27;s &#x27;Depends()&#x27; is this exact same pattern wired into the framework: a route declares what it needs (a DB session, the current user, settings) and FastAPI supplies it, so routes stay thin and testable.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Install pydantic&#x27;s email-validator extra and swap the manual email check for a real &#x27;EmailStr&#x27; field.</li><li>&#9744;&nbsp; Build a small FastAPI route that uses &#x27;Depends()&#x27; to inject a repository, and write a test that injects a fake repository instead of a real database.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Constructing dependencies (a DB connection, an HTTP client) directly inside a class&#x27;s __init__ -- this makes the class impossible to unit test without hitting the real dependency.</li><li>Validating input in application code that duplicates what pydantic could enforce at the boundary -- keep validation in one place (the model), not scattered through the code.</li></ul></div></section><section class='chapter' id='chapter-7'><div class='chapter-number'>Chapter 7</div><h1 style='string-set: chaptertitle "Configuration management"'>Configuration management <span class='track track-core'>Core</span></h1><ul class='points'><li>12-factor apps keep config (DB URLs, API keys, feature flags) in the environment, never hard-coded, so the same image/code runs unmodified in dev, staging, and prod (see the Engineering Standards topic for the full 12-factor list).</li><li>pydantic-settings&#x27; BaseSettings reads and validates environment variables the same way a request body is validated -- missing/invalid config fails fast at startup, not at 3am in production.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Settings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span><span class="n">env_prefix</span><span class="o">=</span><span class="s2">"APP_"</span><span class="p">)</span>
+
+    <span class="n">environment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"development"</span>
+    <span class="n">database_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"postgresql://localhost/dev"</span>
+    <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"APP_ENVIRONMENT"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"production"</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"APP_MAX_RETRIES"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"5"</span>
+
+<span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</pre></div>
+</div><ul class='points'><li>Notice APP_MAX_RETRIES=&quot;5&quot; (a string, from the OS environment) is coerced to the int 5 by Pydantic&#x27;s validation -- the rest of the app can trust settings.max_retries is always an int.</li><li>In pydantic v2, settings configuration goes through &#x27;model_config = SettingsConfigDict(...)&#x27; -- the older &#x27;class Config:&#x27; inner-class style is pydantic v1 syntax and is deprecated.</li><li>Never load secrets (API keys, DB passwords) via a plain .env committed to git -- use a secrets manager (Azure Key Vault / AWS Secrets Manager, covered in Phase 7).</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Add an .env file (git-ignored!) and set &#x27;model_config = SettingsConfigDict(env_file=&quot;.env&quot;)&#x27; so Settings() reads it automatically.</li><li>&#9744;&nbsp; Add a field_validator to Settings that rejects an invalid &#x27;environment&#x27; value (only &#x27;development&#x27;, &#x27;staging&#x27;, &#x27;production&#x27; allowed).</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Committing a real .env file with live secrets to git -- always .gitignore it and commit only a .env.example with placeholder values.</li><li>Reading os.environ directly scattered across the codebase instead of through one validated Settings object -- makes it impossible to know all your config surface at a glance, and skips validation entirely.</li></ul></div></section><section class='chapter' id='chapter-8'><div class='chapter-number'>Chapter 8</div><h1 style='string-set: chaptertitle "Structured logging"'>Structured logging <span class='track track-core'>Core</span></h1><ul class='points'><li>Plain text logs (&#x27;User 42 logged in&#x27;) are hard to search/aggregate at scale. Structured (JSON) logs are queryable: filter by user_id, trace_id, status, latency.</li><li>A correlation/request ID threaded through every log line for a request lets you reconstruct the full story of one request across services.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">JsonFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"level"</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span><span class="p">,</span>
+            <span class="s2">"message"</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">(),</span>
+            <span class="s2">"logger"</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">"request_id"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s2">"request_id"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"fde-academy"</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">JsonFormatter</span><span class="p">())</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[</span><span class="n">handler</span><span class="p">]</span>
+
+<span class="n">request_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"request started"</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">"request_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"db query executed"</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">"request_id"</span><span class="p">:</span> <span class="n">request_id</span><span class="p">})</span>
+</pre></div>
+</div><ul class='points'><li>Both log lines carry the same request_id -- in a real deployment this is set once (e.g. via FastAPI middleware using a contextvar) and every downstream log call inherits it, so a log aggregator (Grafana/ELK/Datadog) can group an entire request&#x27;s logs together.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Add FastAPI middleware that generates a request_id per request (or reads one from an incoming X-Request-ID header) and stores it in a contextvars.ContextVar.</li><li>&#9744;&nbsp; Update JsonFormatter to pull request_id from that contextvar automatically, so callers don&#x27;t need to pass extra={...} manually every time.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Logging secrets/PII (passwords, full card numbers, raw prompts containing user data) in plain text -- structured logs still need the same redaction discipline.</li><li>Using print() instead of the logging module in production code -- print() can&#x27;t be filtered by level, routed to a formatter, or shipped to a log aggregator cleanly.</li></ul></div></section><section class='chapter' id='chapter-9'><div class='chapter-number'>Chapter 9</div><h1 style='string-set: chaptertitle "Exception architecture"'>Exception architecture <span class='track track-core'>Core</span></h1><ul class='points'><li>Define domain-specific exceptions (NotFoundError, PermissionDeniedError) instead of raising bare Exception/ValueError everywhere -- callers can catch precisely what they expect.</li><li>Map each domain exception to an HTTP status once, in one place (an exception handler), instead of scattering try/except + status codes across every route.</li><li>Never leak internals (stack traces, SQL, file paths) in an API error response -- log the detail, return a safe, generic message to the client.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DomainError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base class for all expected, handled application errors."""</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NotFoundError</span><span class="p">(</span><span class="n">DomainError</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource</span> <span class="o">=</span> <span class="n">resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_id</span> <span class="o">=</span> <span class="n">resource_id</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">resource_id</span><span class="si">}</span><span class="s2"> not found"</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PermissionDeniedError</span><span class="p">(</span><span class="n">DomainError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="n">EXCEPTION_STATUS_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">NotFoundError</span><span class="p">:</span> <span class="mi">404</span><span class="p">,</span>
+    <span class="n">PermissionDeniedError</span><span class="p">:</span> <span class="mi">403</span><span class="p">,</span>
+    <span class="n">DomainError</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">to_http_response</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="n">DomainError</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">EXCEPTION_STATUS_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">:</span> <span class="s2">"internal error"</span><span class="p">}</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">(</span><span class="s2">"document"</span><span class="p">,</span> <span class="s2">"doc-123"</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">DomainError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">to_http_response</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
+</pre></div>
+</div><ul class='points'><li>In FastAPI, &#x27;to_http_response&#x27; becomes an &#x27;@app.exception_handler(DomainError)&#x27; -- every route just raises the right domain exception and the mapping happens in exactly one place.</li><li>EXCEPTION_STATUS_MAP is checked in order -- put more specific exception types (like NotFoundError) before their more general parent (DomainError), or the specific case will never be reached.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Wire to_http_response&#x27;s logic into a real FastAPI &#x27;@app.exception_handler(DomainError)&#x27; and confirm each domain exception returns the right status code end-to-end.</li><li>&#9744;&nbsp; Add a ValidationError-style domain exception that returns 422 with a list of field-level problems, similar to how pydantic reports validation errors.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Catching bare &#x27;except Exception&#x27; at the API boundary and returning the raw exception message to the client -- this can leak stack traces, file paths, or SQL fragments.</li><li>Defining domain exceptions but still using generic ValueError/RuntimeError in most of the actual code -- the hierarchy only helps if it&#x27;s used consistently.</li></ul></div></section><section class='chapter' id='chapter-10'><div class='chapter-number'>Chapter 10</div><h1 style='string-set: chaptertitle "Retries and timeouts"'>Retries and timeouts <span class='track track-core'>Core</span></h1><ul class='points'><li>Only retry errors that are actually transient (timeouts, 429/503) -- retrying a 400 (bad request) just repeats the same failure.</li><li>Exponential backoff (with jitter) spaces out retries so a struggling downstream service isn&#x27;t hit with a synchronized retry storm.</li><li>Always pair retries with a deadline/timeout -- an unbounded retry loop can hang a request forever even though each individual attempt eventually fails fast.</li></ul><figure><img src='file:///Users/shriman/Desktop/FDE Academy/P0 - FDE Foundations & Engineering Baseline/03 - 0.1 Production Python/images/retry-backoff-timeline.png'><figcaption>Retry with exponential backoff: attempt 1 fail, attempt 2 fail, attempt 3 success</figcaption></figure><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TransientError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">flaky_call</span><span class="p">(</span><span class="n">attempt_tracker</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">attempt_tracker</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attempt_tracker</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">TransientError</span><span class="p">(</span><span class="s2">"upstream temporarily unavailable"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"success"</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_with_retry</span><span class="p">(</span><span class="n">coro_fn</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">base_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">coro_fn</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">TransientError</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_attempts</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="n">base_delay</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">attempt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2"> failed (</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">), retrying in </span><span class="si">{</span><span class="n">delay</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+
+<span class="n">attempts</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call_with_retry</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">flaky_call</span><span class="p">(</span><span class="n">attempts</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"final result:"</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="s2">"after"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">attempts</span><span class="p">),</span> <span class="s2">"attempts"</span><span class="p">)</span>
+</pre></div>
+</div><ul class='points'><li>The delay roughly doubles each retry (0.2s, 0.4s, 0.8s, ...) plus a small random jitter -- this is exponential backoff with jitter, the standard pattern for calling any external/LLM API.</li><li>asyncio.wait_for enforces a per-attempt deadline; combined with max_attempts, the whole call is bounded in total time no matter how the downstream behaves.</li></ul><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Swap the hand-written retry loop for the &#x27;tenacity&#x27; library and reproduce the same behaviour (exponential backoff, jitter, max attempts).</li><li>&#9744;&nbsp; Add a &#x27;retry only on these specific exception types&#x27; rule, and confirm a non-transient error (e.g. a 400-equivalent) is NOT retried.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Retrying non-idempotent operations (e.g. &#x27;create a payment&#x27;) without an idempotency key -- a retried request can create a duplicate side effect.</li><li>No jitter -- if many clients retry on the exact same fixed schedule, they all hammer the downstream service again at the same moment (a retry storm).</li></ul></div></section><section class='chapter' id='chapter-11'><div class='chapter-number'>Chapter 11</div><h1 style='string-set: chaptertitle "Async Client Disconnection &amp; Inference Cancellation"'>Async Client Disconnection &amp; Inference Cancellation <span class='track track-mandatory'>Mandatory (Addition)</span></h1><h3>Async Client Disconnection and Inference Cancellation</h3><ul class='points'><li>A user closes their browser tab mid-stream while your server is still generating tokens from an LLM -- if you don&#x27;t detect that, you keep burning GPU time and tokens (money) on a response nobody will ever see.</li><li>FastAPI&#x27;s &#x27;await request.is_disconnected()&#x27; lets you detect this inside a streaming generator and cancel the upstream model call instead of letting it run to completion.</li><li>Pattern: run the token-generation loop, and on every iteration (or every N tokens) check for disconnection; if disconnected, break out and cancel the upstream task.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generate_tokens</span><span class="p">(</span><span class="n">cancel_event</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Simulates an LLM streaming tokens one at a time."""</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"The"</span><span class="p">,</span> <span class="s2">"quick"</span><span class="p">,</span> <span class="s2">"brown"</span><span class="p">,</span> <span class="s2">"fox"</span><span class="p">,</span> <span class="s2">"jumps"</span><span class="p">,</span> <span class="s2">"over"</span><span class="p">,</span> <span class="s2">"the"</span><span class="p">,</span> <span class="s2">"lazy"</span><span class="p">,</span> <span class="s2">"dog"</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cancel_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"-- upstream generation cancelled, stopping early --"</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">token</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">simulate_client_disconnect_after</span><span class="p">(</span><span class="n">cancel_event</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"** client disconnected **"</span><span class="p">)</span>
+    <span class="n">cancel_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">cancel_event</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+    <span class="n">disconnect_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+        <span class="n">simulate_client_disconnect_after</span><span class="p">(</span><span class="n">cancel_event</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.35</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">generate_tokens</span><span class="p">(</span><span class="n">cancel_event</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"streamed token:"</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">disconnect_task</span>
+
+<span class="k">await</span> <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div><ul class='points'><li>Streaming stops as soon as the (simulated) disconnect fires, instead of generating all 9 tokens regardless of whether anyone is still listening.</li><li>In a real FastAPI StreamingResponse, replace &#x27;cancel_event.is_set()&#x27; with &#x27;await request.is_disconnected()&#x27;, and instead of just &#x27;return&#x27;, also cancel the real upstream task (e.g. an OpenAI/Anthropic streaming call) -- typically by catching asyncio.CancelledError around the upstream call -- so the provider stops billing you for tokens no client will receive.</li></ul><div class='codeblock'><div class="codehilite"><pre><span></span><span class="c1"># Real FastAPI shape (reference only -- not executed here, no FastAPI app in this notebook):</span>
+<span class="c1">#</span>
+<span class="c1"># @app.get("/stream")</span>
+<span class="c1"># async def stream(request: Request):</span>
+<span class="c1">#     async def event_generator():</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             async for token in call_llm_stream(prompt):</span>
+<span class="c1">#                 if await request.is_disconnected():</span>
+<span class="c1">#                     break</span>
+<span class="c1">#                 yield f"data: {token}\n\n"</span>
+<span class="c1">#         except asyncio.CancelledError:</span>
+<span class="c1">#             pass  # upstream call cancelled cleanly</span>
+<span class="c1">#     return StreamingResponse(event_generator(), media_type="text/event-stream")</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"see the commented reference pattern above"</span><span class="p">)</span>
+</pre></div>
+</div><div class='checklist'><h3>Hands-on Lab Checklist</h3><ul><li>&#9744;&nbsp; Build the real FastAPI SSE endpoint sketched above against a real (or mocked) streaming LLM call.</li><li>&#9744;&nbsp; Manually disconnect mid-stream (close the browser tab / curl --max-time) and confirm, via logs, that the upstream call is actually cancelled, not left running.</li></ul></div><div class='pitfalls'><h3>&#9888;&nbsp; Common Pitfalls</h3><ul><li>Checking is_disconnected() only once at the start of the generator -- some ASGI servers only deliver the disconnect signal when you poll for it periodically inside the loop.</li><li>Cancelling the async generator but forgetting to also cancel/close the actual upstream HTTP call to the model provider -- the provider keeps generating (and billing) even though your server stopped reading the stream.</li></ul></div></section>
+</body>
+</html>
