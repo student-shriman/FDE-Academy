@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: fde-academy
+    name: ai-academy
     runtime: docker
     plan: free
-    healthCheckPath: /api/health
+    healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
         sync: false

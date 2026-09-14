@@ -722,6 +722,7 @@ def get_admin_stats(admin_user_id: int = Query(...)):
         "total_completions": total_completions
     }
 
+@app.get("/health")
 @app.get("/api/health")
 @app.get("/status")
 def health_check():
