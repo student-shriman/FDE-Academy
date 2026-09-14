@@ -60,6 +60,16 @@ def seed_rbac_users():
             "role": "student",
             "password_hash": default_pwd_hash,
             "avatar_url": None
+        },
+        {
+            "name": "Tushar Vidyarthy",
+            "identifier": "tusharvidyarthiaem@gmail.com",
+            "auth_type": "gmail",
+            "email": "tusharvidyarthiaem@gmail.com",
+            "phone": None,
+            "role": "reviewer",
+            "password_hash": default_pwd_hash,
+            "avatar_url": None
         }
     ]
     
