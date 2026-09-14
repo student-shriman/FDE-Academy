@@ -1,8 +1,14 @@
 import os
-import sqlite3
 import hashlib
+import psycopg
+from psycopg.rows import dict_row
+from dotenv import load_dotenv
 
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "curriculum.db")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ENV_PATH = os.path.join(BASE_DIR, "server", ".env")
+load_dotenv(ENV_PATH)
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def hash_password(password: str) -> str:
     salt = os.urandom(16).hex()
@@ -10,17 +16,16 @@ def hash_password(password: str) -> str:
     return f"{salt}${key.hex()}"
 
 def seed_rbac_users():
-    conn = sqlite3.connect(DB_PATH)
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL not found in server/.env")
+    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row)
     cursor = conn.cursor()
     
-    print(f"Connecting to database at {DB_PATH}...")
+    print("Connecting to Supabase PostgreSQL...")
     
     # 1. Clear old user progress and user accounts
     cursor.execute("DELETE FROM user_progress")
     cursor.execute("DELETE FROM users")
-    
-    # Reset sqlite_sequence for clean IDs
-    cursor.execute("DELETE FROM sqlite_sequence WHERE name IN ('users', 'user_progress')")
     
     # 2. Seed default password: Academy@2026
     default_pwd_hash = hash_password("Academy@2026")
@@ -62,19 +67,23 @@ def seed_rbac_users():
         cursor.execute(
             """
             INSERT INTO users (name, identifier, auth_type, email, phone, role, password_hash, avatar_url)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (u["name"], u["identifier"], u["auth_type"], u["email"], u["phone"], u["role"], u["password_hash"], u["avatar_url"])
         )
         print(f"Seeded user: {u['name']} ({u['email']}) as {u['role']}")
         
+    cursor.execute("""
+        SELECT setval(pg_get_serial_sequence('users', 'id'), COALESCE((SELECT MAX(id) FROM users), 1));
+    """)
     conn.commit()
     
     # Verify seeded accounts
-    seeded = cursor.execute("SELECT id, name, email, role FROM users").fetchall()
-    print("\nCurrent users in database:")
+    cursor.execute("SELECT id, name, email, role FROM users")
+    seeded = cursor.fetchall()
+    print("\nCurrent users in Supabase database:")
     for row in seeded:
-        print(f"  ID {row[0]}: {row[1]} | {row[2]} | Role: {row[3]}")
+        print(f"  ID {row['id']}: {row['name']} | {row['email']} | Role: {row['role']}")
         
     conn.close()
     print("Database seeding completed successfully.")

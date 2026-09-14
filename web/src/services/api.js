@@ -1,4 +1,4 @@
-// API client for AI Academy with SQLite authentication
+// API client for AI Academy with Supabase Cloud PostgreSQL authentication
 
 export async function apiSignUp(payload) {
   let res;

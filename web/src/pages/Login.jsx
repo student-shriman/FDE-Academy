@@ -223,7 +223,7 @@ export default function Login({ onLogin, onNavigate }) {
           <p className="mt-2 text-xs sm:text-sm text-slate-400">
             {isSignUp 
               ? 'Register with your Gmail ID or Mobile Phone to access Masterclass & FDE tracks.'
-              : 'Sign in to sync your topic coverage and chapters with SQLite.'}
+              : 'Sign in to sync your topic coverage and chapters with Supabase Cloud.'}
           </p>
         </div>
 
@@ -556,13 +556,13 @@ export default function Login({ onLogin, onNavigate }) {
 
                 <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-left space-y-1 text-xs">
                   <div className="text-[11px] font-semibold text-slate-400">
-                    Existing Account Credentials (SQLite):
+                    Platform Accounts:
                   </div>
                   <div className="text-[11px] text-slate-300 font-mono">
-                    <span className="text-amber-400 font-semibold">Gmail:</span> student.shriman@gmail.com &bull; <span className="text-amber-400 font-semibold">Pass:</span> 123456
+                    <span className="text-amber-400 font-semibold">Admin:</span> student.shriman@gmail.com &bull; <span className="text-amber-400 font-semibold">Pass:</span> Academy@2026
                   </div>
                   <div className="text-[11px] text-slate-400 font-mono">
-                    <span className="text-blue-400 font-semibold">Phone:</span> +919876500123 &bull; <span className="text-blue-400 font-semibold">Pass:</span> PriyaPassword123!
+                    <span className="text-blue-400 font-semibold">Student:</span> shriman.nicholson@gmail.com &bull; <span className="text-blue-400 font-semibold">Pass:</span> Academy@2026
                   </div>
                 </div>
               </>
@@ -575,7 +575,7 @@ export default function Login({ onLogin, onNavigate }) {
               className="w-full mt-2 rgb-glow-btn disabled:opacity-50 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
               {loading ? (
-                <span>Connecting to SQLite database...</span>
+                <span>Connecting to Cloud database...</span>
               ) : isSignUp ? (
                 <>
                   <span>Create Account & Register</span>
@@ -595,7 +595,7 @@ export default function Login({ onLogin, onNavigate }) {
         {/* Persistent Database notice */}
         <div className="mt-8 text-center flex items-center justify-center gap-2 text-xs text-slate-500">
           <ShieldCheck className="w-4 h-4 text-emerald-500" />
-          <span>Accounts & progress stored securely in SQLite `curriculum.db`</span>
+          <span>Accounts &amp; progress stored securely in Supabase Cloud PostgreSQL</span>
         </div>
 
       </div>

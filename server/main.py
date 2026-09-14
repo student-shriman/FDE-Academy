@@ -1,5 +1,4 @@
 import os
-import sqlite3
 import hashlib
 import hmac
 import re
@@ -9,6 +8,9 @@ from fastapi import FastAPI, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
+import psycopg
+from psycopg_pool import ConnectionPool
+from psycopg.rows import dict_row
 
 app = FastAPI(title="AI Academy API", version="1.0.0")
 
@@ -22,29 +24,21 @@ app.add_middleware(
 )
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(BASE_DIR, "curriculum.db")
 ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(ENV_PATH)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-USE_POSTGRES = bool(DATABASE_URL and ("postgres" in DATABASE_URL or "postgresql" in DATABASE_URL))
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL must be configured in server/.env for Supabase Cloud PostgreSQL.")
 
-db_pool = None
-if USE_POSTGRES:
-    try:
-        import psycopg
-        from psycopg_pool import ConnectionPool
-        from psycopg.rows import dict_row
-        db_pool = ConnectionPool(
-            DATABASE_URL,
-            min_size=1,
-            max_size=10,
-            kwargs={"row_factory": dict_row}
-        )
-        print("Connected to Supabase Cloud PostgreSQL with psycopg3 pool.")
-    except Exception as exc:
-        print(f"Failed to initialize Supabase PostgreSQL pool: {exc}. Falling back to SQLite.")
-        USE_POSTGRES = False
+# Initialize high-performance PostgreSQL connection pool
+db_pool = ConnectionPool(
+    DATABASE_URL,
+    min_size=1,
+    max_size=10,
+    kwargs={"row_factory": dict_row}
+)
+print("Connected to Supabase Cloud PostgreSQL with psycopg3 pool.")
 
 class RowWrapper:
     def __init__(self, data: dict):
@@ -79,50 +73,38 @@ class RowWrapper:
         return repr(self._data)
 
 class DBCursorWrapper:
-    def __init__(self, raw_cur, is_pg=False):
+    def __init__(self, raw_cur):
         self._cur = raw_cur
-        self.is_pg = is_pg
         self.lastrowid = None
 
     def execute(self, sql: str, params: tuple = None):
-        if self.is_pg:
-            sql_clean = sql.replace("?", "%s").strip().rstrip(";")
-            is_insert = sql_clean.strip().upper().startswith("INSERT INTO") and "RETURNING" not in sql_clean.upper()
-            if is_insert:
-                sql_clean += " RETURNING id"
-                if params is not None:
-                    self._cur.execute(sql_clean, params)
-                else:
-                    self._cur.execute(sql_clean)
-                row = self._cur.fetchone()
-                if row and "id" in row:
-                    self.lastrowid = row["id"]
+        sql_clean = sql.replace("?", "%s").strip().rstrip(";")
+        is_insert = sql_clean.strip().upper().startswith("INSERT INTO") and "RETURNING" not in sql_clean.upper()
+        if is_insert:
+            sql_clean += " RETURNING id"
+            if params is not None:
+                self._cur.execute(sql_clean, params)
             else:
-                if params is not None:
-                    self._cur.execute(sql_clean, params)
-                else:
-                    self._cur.execute(sql_clean)
+                self._cur.execute(sql_clean)
+            row = self._cur.fetchone()
+            if row and "id" in row:
+                self.lastrowid = row["id"]
         else:
             if params is not None:
-                self._cur.execute(sql, params)
+                self._cur.execute(sql_clean, params)
             else:
-                self._cur.execute(sql)
-            self.lastrowid = getattr(self._cur, "lastrowid", None)
+                self._cur.execute(sql_clean)
         return self
 
     def fetchone(self):
         row = self._cur.fetchone()
         if row is None:
             return None
-        if self.is_pg:
-            return RowWrapper(row)
-        return row
+        return RowWrapper(row)
 
     def fetchall(self):
         rows = self._cur.fetchall()
-        if self.is_pg:
-            return [RowWrapper(r) for r in rows]
-        return rows
+        return [RowWrapper(r) for r in rows]
 
     def close(self):
         try:
@@ -131,13 +113,12 @@ class DBCursorWrapper:
             pass
 
 class DBConnectionWrapper:
-    def __init__(self, raw_conn, is_pg=False, pool=None):
+    def __init__(self, raw_conn, pool):
         self.raw_conn = raw_conn
-        self.is_pg = is_pg
         self.pool = pool
 
     def cursor(self):
-        return DBCursorWrapper(self.raw_conn.cursor(), self.is_pg)
+        return DBCursorWrapper(self.raw_conn.cursor())
 
     def commit(self):
         self.raw_conn.commit()
@@ -146,7 +127,7 @@ class DBConnectionWrapper:
         self.raw_conn.rollback()
 
     def close(self):
-        if self.is_pg and self.pool:
+        if self.pool:
             try:
                 self.pool.putconn(self.raw_conn)
             except Exception:
@@ -174,55 +155,39 @@ class DBConnectionWrapper:
         self.close()
 
 def get_db():
-    if USE_POSTGRES and db_pool is not None:
-        try:
-            conn = db_pool.getconn()
-            return DBConnectionWrapper(conn, is_pg=True, pool=db_pool)
-        except Exception as e:
-            print(f"PostgreSQL pool error: {e}. Falling back to SQLite.")
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return DBConnectionWrapper(conn, is_pg=False)
+    conn = db_pool.getconn()
+    return DBConnectionWrapper(conn, pool=db_pool)
 
 def init_db():
-    """Ensure database schema includes SSO and RBAC columns."""
+    """Ensure database schema includes required PostgreSQL tables and columns."""
     conn = get_db()
     cursor = conn.cursor()
-    if USE_POSTGRES:
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                name TEXT NOT NULL,
-                identifier TEXT UNIQUE NOT NULL,
-                auth_type TEXT NOT NULL DEFAULT 'gmail',
-                email TEXT,
-                phone TEXT,
-                password_hash TEXT NOT NULL,
-                role TEXT DEFAULT 'student',
-                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-                google_id TEXT,
-                avatar_url TEXT
-            );
-        """)
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_progress (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                subtopic_id TEXT NOT NULL,
-                chapter_id TEXT,
-                completed INTEGER DEFAULT 1,
-                completed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(user_id, subtopic_id)
-            );
-        """)
-    else:
-        columns = [row[1] for row in cursor.execute("PRAGMA table_info(users)").fetchall()]
-        if "google_id" not in columns:
-            cursor.execute("ALTER TABLE users ADD COLUMN google_id TEXT")
-        if "avatar_url" not in columns:
-            cursor.execute("ALTER TABLE users ADD COLUMN avatar_url TEXT")
-        if "role" not in columns:
-            cursor.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'student'")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            identifier TEXT UNIQUE NOT NULL,
+            auth_type TEXT NOT NULL DEFAULT 'gmail',
+            email TEXT,
+            phone TEXT,
+            password_hash TEXT NOT NULL,
+            role TEXT DEFAULT 'student',
+            created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            google_id TEXT,
+            avatar_url TEXT
+        );
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_progress (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            subtopic_id TEXT NOT NULL,
+            chapter_id TEXT,
+            completed INTEGER DEFAULT 1,
+            completed_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, subtopic_id)
+        );
+    """)
     conn.commit()
     conn.close()
 

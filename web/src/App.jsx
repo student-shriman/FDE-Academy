@@ -22,7 +22,7 @@ export default function App() {
     }
   });
 
-  // Progress State from SQLite
+  // Progress State from Cloud PostgreSQL
   const [progress, setProgress] = useState(null);
 
   // Routing State: 'home', 'login', 'courses', 'course-detail', 'preface', 'contents', 'reader'

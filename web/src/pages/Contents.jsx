@@ -102,7 +102,7 @@ export default function Contents({ curriculum, progress, onToggleProgress, onSel
           </div>
           <div className="inline-flex items-center gap-1 text-[11px] font-mono text-cyan-400 bg-slate-900 px-2.5 py-0.5 rounded-full border border-cyan-500/30">
             <Database className="w-3 h-3 text-cyan-400" />
-            SQLite-Backed Coverage Tracker (`user_progress` table)
+            Supabase-Backed Coverage Tracker (`user_progress` table)
           </div>
         </div>
 
@@ -112,7 +112,7 @@ export default function Contents({ curriculum, progress, onToggleProgress, onSel
         <p className="text-slate-400 text-sm sm:text-base max-w-4xl leading-relaxed">
           The entire 36-week body of knowledge. Check off completed topics using the interactive checkboxes{' '}
           <code className="text-cyan-400 font-mono bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">[✓]</code>{' '}
-          to save your progress directly into the SQLite database.
+          to save your progress directly into the Cloud database.
         </p>
       </div>
 
@@ -166,7 +166,7 @@ export default function Contents({ curriculum, progress, onToggleProgress, onSel
                 {progress.p0_completed_count} / {progress.p0_total_subtopics} Chapters ({progress.p0_percentage}%)
               </span>
             </div>
-            <span className="text-slate-500">All progress is synchronized with your SQLite account in real time.</span>
+            <span className="text-slate-500">All progress is synchronized with your Cloud account in real time.</span>
           </div>
         </div>
       )}
@@ -392,13 +392,13 @@ export default function Contents({ curriculum, progress, onToggleProgress, onSel
                                 {/* Left: Completion Checkbox + Title & Details */}
                                 <div className="flex items-start gap-3 flex-1 pr-2">
                                   
-                                  {/* Interactive SQLite Checkbox */}
+                                  {/* Interactive Cloud Progress Checkbox */}
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       onToggleProgress(sub.id, sub.chapter_id);
                                     }}
-                                    title={isDone ? 'Mark Incomplete' : 'Mark Completed in SQLite DB'}
+                                    title={isDone ? 'Mark Incomplete' : 'Mark Completed'}
                                     className={`mt-0.5 p-1 rounded-md transition-colors cursor-pointer ${
                                       isDone 
                                         ? 'text-emerald-400 hover:text-emerald-300 bg-emerald-500/15' 
@@ -587,7 +587,7 @@ export default function Contents({ curriculum, progress, onToggleProgress, onSel
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>
-                  {completedSubs.has(activeModalSubtopic.sub.id) ? 'Mark as Incomplete' : 'Mark as Completed in SQLite'}
+                  {completedSubs.has(activeModalSubtopic.sub.id) ? 'Mark as Incomplete' : 'Mark as Completed'}
                 </span>
               </button>
 

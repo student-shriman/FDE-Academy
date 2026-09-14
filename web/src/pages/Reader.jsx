@@ -168,7 +168,7 @@ export default function Reader({
                 }`}
               >
                 <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-400' : 'text-white'}`} />
-                <span>{isCompleted ? 'Completed in SQLite' : 'Mark Completed'}</span>
+                <span>{isCompleted ? 'Completed' : 'Mark Completed'}</span>
               </button>
             )}
 
@@ -218,7 +218,7 @@ export default function Reader({
             <div className="p-5 bg-slate-900/90 border border-slate-800 rounded-2xl flex items-center justify-between gap-4 shadow-xl rgb-glow-card hover:border-emerald-500/40">
               <div>
                 <div className="font-bold text-sm text-white">Finished this chapter?</div>
-                <div className="text-xs text-slate-400">Save your progress directly into the SQLite database.</div>
+                <div className="text-xs text-slate-400">Save your progress directly into the Cloud database.</div>
               </div>
 
               {currentItem && (
