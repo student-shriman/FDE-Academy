@@ -723,6 +723,7 @@ def get_admin_stats(admin_user_id: int = Query(...)):
     }
 
 @app.get("/api/health")
+@app.get("/status")
 def health_check():
     return {"status": "healthy", "service": "fde-academy-backend"}
 
