@@ -1,39 +1,114 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   BookOpen, 
   ArrowRight, 
   Sparkles, 
   CheckCircle2, 
   Layers, 
-  Calendar, 
   Code2, 
   ShieldCheck, 
-  FileText,
-  Clock,
-  Compass,
-  Cpu,
-  GraduationCap,
-  ListTree,
+  Clock, 
+  Compass, 
+  Cpu, 
+  Database, 
+  Server, 
+  Globe, 
+  Bot, 
+  Zap, 
+  Video, 
+  FileText, 
+  MessageSquare, 
+  Flame, 
+  Briefcase, 
+  Award, 
+  TrendingUp, 
+  ChevronRight,
   Terminal,
-  Workflow,
-  Wrench,
-  Award
+  Star
 } from 'lucide-react';
 import { coursesData } from '../data/coursesData';
 
-export default function Home({ user, curriculum, onNavigate, onSelectChapter, onSelectCourse }) {
-  const aiMasterclass = coursesData['ai-masterclass'];
-  const fdeCourse = coursesData['fde'];
+export default function Home({ user, curriculum, progress, onNavigate, onSelectChapter, onSelectCourse }) {
+  const [selectedSprintFilter, setSelectedSprintFilter] = useState('all');
 
   const handleOpenCourse = (courseId) => {
     if (onSelectCourse) onSelectCourse(courseId);
     window.location.hash = `course/${courseId}`;
   };
 
+  const sprints = [
+    {
+      id: 'langgraph-sprint',
+      title: 'Agentic RAG & LangGraph Workflows',
+      subtitle: 'Build stateful multi-agent systems, cyclic graphs, reflection loops, and human-in-the-loop production workflows.',
+      badge: '4-Week Sprint',
+      badgeColor: 'from-cyan-500 to-blue-500',
+      duration: '4 Weeks',
+      stats: '4 Modules • 16 Labs • Real Swarms',
+      tags: ['LangGraph', 'Multi-Agent', 'Memory', 'Tools'],
+      targetCourse: 'ai-masterclass'
+    },
+    {
+      id: 'fastapi-asyncio',
+      title: 'Production Python AsyncIO & FastAPI',
+      subtitle: 'Master async Python internals, connection pooling, background tasks, high throughput, and zero-downtime deployment.',
+      badge: 'Advanced Systems',
+      badgeColor: 'from-emerald-500 to-teal-500',
+      duration: '3 Weeks',
+      stats: '6 Modules • 18 Topics • Benchmarking',
+      tags: ['AsyncIO', 'FastAPI', 'Uvicorn', 'Redis'],
+      targetCourse: 'fde'
+    },
+    {
+      id: 'mcp-masters',
+      title: 'Model Context Protocol (MCP) Masters',
+      subtitle: 'Standardize LLM tool usage, build custom MCP servers, connect database sidecars, and local desktop agents.',
+      badge: 'Next-Gen Protocol',
+      badgeColor: 'from-amber-500 to-orange-500',
+      duration: '2 Weeks',
+      stats: '5 Modules • 12 Custom Servers',
+      tags: ['MCP', 'JSON-RPC', 'Sidecars', 'Tools'],
+      targetCourse: 'fde'
+    },
+    {
+      id: 'vllm-serving',
+      title: 'Kubernetes GPU Clusters & vLLM Serving',
+      subtitle: 'Provision multi-GPU Kubernetes clusters, setup vLLM continuous batching, dynamic LoRA adapters, and autoscaling.',
+      badge: 'DevOps & Cloud',
+      badgeColor: 'from-violet-500 to-indigo-500',
+      duration: '4 Weeks',
+      stats: '8 Production Labs • Helm & Terraform',
+      tags: ['Kubernetes', 'vLLM', 'Triton', 'GPU'],
+      targetCourse: 'fde'
+    }
+  ];
+
+  const domains = [
+    { id: '01', title: 'AI & Generative AI', count: '116 Items', icon: Sparkles, desc: 'LLMs, Fine-tuning, RLHF, Embeddings & Multimodal Models' },
+    { id: '02', title: 'Enterprise AI Architecture', count: '58 Items', icon: Cpu, desc: 'FDE Systems, Scalability, Architecture Decision Records & C4 Models' },
+    { id: '03', title: 'Data Engineering & Vector DBs', count: '23 Items', icon: Database, desc: 'Postgres, pgvector, Qdrant, Milvus & Streaming Kafka' },
+    { id: '04', title: 'Production Systems & APIs', count: '18 Items', icon: Server, desc: 'FastAPI, AsyncIO, gRPC, WebSockets & High-Concurrency Pipelines' },
+    { id: '05', title: 'Agentic Workflows & MCP', count: '14 Items', icon: Bot, desc: 'LangGraph, Multi-Agent Swarms, Tool Calling & MCP Protocols' },
+    { id: '06', title: 'Cloud & Kubernetes AI', count: '12 Items', icon: Globe, desc: 'GPU Workloads, vLLM, TensorRT-LLM, Helm Charts & Observability' },
+    { id: '07', title: 'AI Security & Governance', count: '10 Items', icon: ShieldCheck, desc: 'OWASP LLM Top 10, Prompt Injection Defense & Red-Teaming' },
+    { id: '08', title: '26 Career Roadmaps Available', count: 'Guided Paths', icon: Compass, desc: 'Pick a role and follow step-by-step from foundations to Staff AI Architect.' },
+  ];
+
+  const toolkits = [
+    { title: 'Academy Talent Network', desc: 'One profile, verified code deliverables, and direct employer visibility without recruiter noise.', icon: Briefcase, color: 'text-pink-400', badge: 'Active' },
+    { title: 'Cloud GPU Labs', desc: 'Instant in-browser Linux & GPU development environments pre-loaded with PyTorch, CUDA, and datasets.', icon: Terminal, color: 'text-cyan-400', badge: 'Online' },
+    { title: 'Academy Code Judge', desc: 'Solve hands-on algorithmic and systems engineering tasks with instant test validation.', icon: Code2, color: 'text-purple-400', badge: 'Ready' },
+    { title: 'System Evaluator', desc: 'Automated AI grading of your architecture design diagrams, scalability trade-offs, and ADRs.', icon: Award, color: 'text-emerald-400', badge: 'AI Powered' },
+    { title: 'Avani Mock Interviewer', desc: 'Real-time AI voice and live coding technical interviews with granular feedback rubrics.', icon: Video, color: 'text-amber-400', badge: 'Voice AI' },
+    { title: 'Resume AI Tailor', desc: 'ATS scoring and AI-enhanced bullet points that emphasize quantifiable engineering metrics.', icon: FileText, color: 'text-rose-400', badge: 'ATS v2.4' },
+    { title: 'Academy AI Assistant', desc: 'Dedicated multi-model engineering workspace (Claude, GPT, Gemini) embedded in your curriculum.', icon: MessageSquare, color: 'text-blue-400', badge: 'Pro Swarm' },
+    { title: 'Engineering Hackathons', desc: 'Monthly client-sponsored production challenges with cash bounties and fast-tracked interviews.', icon: Flame, color: 'text-yellow-400', badge: '₹2.5L Prize' },
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
       
-      {/* Intro & Hero Banner */}
+      {/* 1. STUDENT COMMAND CENTER HERO */}
       <div className="relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 border border-slate-800/80 p-8 sm:p-12 overflow-hidden shadow-2xl rgb-glow-card">
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -43,32 +118,43 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
           <div className="rgb-laser-line opacity-60"></div>
         </div>
 
-        <div className="relative z-10 max-w-3xl space-y-5">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/80 border border-slate-700 text-xs font-semibold tracking-wide shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-pink-400" />
-            <span className="text-slate-300">Welcome back,</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 font-bold">
-              {user.name}
-            </span>
+        <div className="relative z-10 max-w-4xl space-y-6">
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/80 border border-slate-700 text-xs font-semibold tracking-wide shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+              <span className="text-slate-300">Welcome back,</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 font-bold">
+                {user.name}
+              </span>
+            </div>
+
+            {progress && (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-emerald-500/30 text-xs text-emerald-400 font-mono font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{progress.total_completed} / {progress.total_subtopics} Completed ({progress.overall_percentage}%)</span>
+                <span>&bull;</span>
+                <span>{progress.completed_hours}h logged</span>
+              </div>
+            )}
           </div>
           
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-            The <span className="rgb-gradient-text animate-rgb-flow">AI Engineering & Architect</span> Academy
+            The <span className="rgb-gradient-text animate-rgb-flow">AI Engineering &amp; Architect</span> Academy
           </h1>
           
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Choose your specialized learning track below. From modern <strong>Generative AI & LLM Engineering</strong> 
-            to high-stakes <strong>Forward Deployed Enterprise Architecture</strong>, our curricula provide hands-on, 
-            production-verified code, visual architectures, and portfolio-ready deliverables.
+            All curriculum tracks, specialized sprints, interactive cloud labs, and architecture evaluators are unlocked. 
+            Select your track below to build production-verified systems.
           </p>
 
           <div className="pt-2 flex flex-wrap gap-4">
             <button
               onClick={() => onNavigate('courses')}
-              className="px-6 py-3.5 rounded-xl rgb-glow-btn text-white font-bold text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              className="px-6 py-3.5 rounded-xl rgb-glow-btn text-white font-bold text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg shadow-purple-500/20"
             >
               <Layers className="w-4 h-4" />
-              <span>Browse All Courses</span>
+              <span>Browse All Tracks</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
@@ -81,31 +167,30 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
             </button>
 
             <button
-              onClick={() => onNavigate('preface')}
+              onClick={() => onNavigate('contents')}
               className="px-6 py-3.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center gap-2 border border-slate-700/60 hover:border-slate-600 transition-colors cursor-pointer"
             >
-              <span>Read FDE Manifesto</span>
+              <span>Table of Contents</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Primary Courses Hub Section */}
+      {/* 2. THE 2 FLAGSHIP COURSES */}
       <div className="space-y-6">
-        <div>
-          <div className="text-xs uppercase tracking-wider text-pink-400 font-bold mb-1 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
-            Core Curriculum Tracks
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+          <div>
+            <div className="text-xs uppercase tracking-wider text-pink-400 font-bold mb-1 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              Flagship Curricula
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Select Your Core Specialization
+            </h2>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Select Your Specialization
-          </h2>
-          <p className="text-slate-400 text-sm mt-1">
-            Pick a track to view detailed syllabi, weekly modules, code repositories, and project milestones.
-          </p>
+          <span className="text-xs text-slate-400">Phase 0 Textbook &bull; 30 Chapters Ready</span>
         </div>
 
-        {/* 2 Flagship Courses Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
           {/* COURSE 1: AI Masterclass */}
@@ -123,7 +208,7 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
 
               <div>
                 <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight group-hover:text-cyan-400 transition-colors">
-                  AI Masterclass
+                  AI Masterclass: Zero to Hero
                 </h3>
                 <div className="text-sm font-semibold text-cyan-300 mt-1">
                   Foundations to Production Generative AI
@@ -135,32 +220,25 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
                 </p>
               </div>
 
-              {/* Module badges */}
-              <div className="space-y-2.5 pt-2">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Curriculum Highlights:
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    'Transformer Internals',
-                    'Prompt Reasoning (CoT/ReAct)',
-                    'Vector DBs (Qdrant/Pinecone)',
-                    'Hybrid Enterprise RAG',
-                    'Multi-Agent Graphs',
-                    'LoRA/QLoRA Fine-Tuning',
-                    'LLMOps & Ragas Eval'
-                  ].map((tag, idx) => (
-                    <span 
-                      key={idx}
-                      className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 group-hover:border-slate-700 transition-colors"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex flex-wrap gap-2 pt-2">
+                {[
+                  'Transformer Internals',
+                  'Prompt Reasoning (CoT/ReAct)',
+                  'Vector DBs (Qdrant)',
+                  'Hybrid Enterprise RAG',
+                  'Multi-Agent Graphs',
+                  'LoRA/QLoRA Fine-Tuning',
+                  'LLMOps & Ragas'
+                ].map((tag, idx) => (
+                  <span 
+                    key={idx}
+                    className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
 
-              {/* Stats Bar */}
               <div className="grid grid-cols-3 gap-2 py-4 border-y border-slate-800/80 text-center">
                 <div>
                   <div className="text-lg font-black text-white">8</div>
@@ -182,7 +260,7 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
                 onClick={() => handleOpenCourse('ai-masterclass')}
                 className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer group-hover:scale-[1.01]"
               >
-                <span>View AI Masterclass Details & Syllabus</span>
+                <span>Open AI Masterclass Syllabus &amp; Labs</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -206,41 +284,34 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
                   Forward Deployed AI Architect (FDE)
                 </h3>
                 <div className="text-sm font-semibold text-amber-300 mt-1">
-                  Enterprise AI Systems & Production Delivery
+                  Enterprise AI Systems &amp; Production Delivery
                 </div>
                 <p className="text-slate-300 text-sm mt-3 leading-relaxed">
-                  The flagship 36-week enterprise delivery program. Learn to build and deploy zero-failure 
-                  AI systems inside Fortune 500 environments: production Python & FastAPI, enterprise identity (OAuth/RBAC), 
-                  Kafka pipelines, Kubernetes GPU clusters, AI security, and client PoV-to-production exit gates.
+                  The flagship 36-week enterprise delivery program. Learn to build zero-failure 
+                  AI systems inside enterprise environments: production Python AsyncIO &amp; FastAPI, 
+                  enterprise identity (OAuth/RBAC), Kafka pipelines, Kubernetes GPU clusters, and client exit gates.
                 </p>
               </div>
 
-              {/* Module badges */}
-              <div className="space-y-2.5 pt-2">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                  Curriculum Highlights:
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    'Phase 0: 30 Live Chapters',
-                    'Production Python AsyncIO',
-                    'Enterprise AI System Design',
-                    'Identity & RBAC/ABAC',
-                    'Distributed Kafka Streams',
-                    'Kubernetes GPU Workloads',
-                    '17 Portfolio Deliverables'
-                  ].map((tag, idx) => (
-                    <span 
-                      key={idx}
-                      className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex flex-wrap gap-2 pt-2">
+                {[
+                  'Phase 0: 30 Live Chapters',
+                  'Production Python AsyncIO',
+                  'Enterprise System Design',
+                  'Identity & RBAC/ABAC',
+                  'Distributed Kafka Streams',
+                  'Kubernetes GPU Workloads',
+                  '17 Portfolio Deliverables'
+                ].map((tag, idx) => (
+                  <span 
+                    key={idx}
+                    className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
 
-              {/* Stats Bar */}
               <div className="grid grid-cols-3 gap-2 py-4 border-y border-slate-800 text-center">
                 <div>
                   <div className="text-lg font-black text-white">13</div>
@@ -262,7 +333,7 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
                 onClick={() => handleOpenCourse('fde')}
                 className="w-full py-3.5 px-5 rounded-xl rgb-glow-btn text-white font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer group-hover:scale-[1.01]"
               >
-                <span>View FDE Curriculum & Chapters</span>
+                <span>Open FDE Curriculum &amp; Reader</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -271,7 +342,224 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
         </div>
       </div>
 
-      {/* Side-by-Side Track Comparison Table */}
+      {/* 3. THE 4 ADVANCED ENGINEERING SPRINTS */}
+      <div className="space-y-6">
+        <div>
+          <div className="text-xs uppercase tracking-wider text-cyan-400 font-bold mb-1 flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5" />
+            Specialized Modular Sprints
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Targeted Technical Sprints
+          </h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Short, intensive engineering sprints focusing on high-demand AI infrastructure layers.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {sprints.map((sprint) => (
+            <div 
+              key={sprint.id}
+              className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/50 transition-all flex flex-col justify-between group"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold text-white bg-gradient-to-r ${sprint.badgeColor}`}>
+                    {sprint.badge}
+                  </span>
+                  <span className="text-[11px] font-mono text-slate-400">{sprint.duration}</span>
+                </div>
+                <h3 className="font-bold text-base text-white group-hover:text-cyan-300 transition-colors mb-2">
+                  {sprint.title}
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                  {sprint.subtitle}
+                </p>
+                <div className="text-[11px] font-mono text-purple-300 bg-slate-950 p-2 rounded-lg border border-slate-800/80 mb-4">
+                  {sprint.stats}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+                <div className="flex gap-1">
+                  {sprint.tags.slice(0, 2).map((t) => (
+                    <span key={t} className="text-[10px] font-mono bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  onClick={() => handleOpenCourse(sprint.targetCourse)}
+                  className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors cursor-pointer"
+                  title="View curriculum"
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. CHOOSE YOUR AREA OF INTEREST (DOMAINS 01 - 07 & ROADMAPS) */}
+      <div className="space-y-6">
+        <div>
+          <div className="text-xs uppercase tracking-wider text-purple-400 font-bold mb-1 flex items-center gap-1.5">
+            <Compass className="w-3.5 h-3.5" />
+            Curriculum Domains
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Choose Your Area of Interest
+          </h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Explore specific engineering topics across our 01–07 technical domains.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {domains.map((domain) => {
+            const Icon = domain.icon;
+            const isCallout = domain.id === '08';
+            return (
+              <div
+                key={domain.id}
+                onClick={() => onNavigate('contents')}
+                className={`p-6 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                  isCallout
+                    ? 'bg-gradient-to-br from-purple-900/40 via-pink-900/30 to-slate-900 border-purple-500/50 shadow-xl hover:border-pink-400'
+                    : 'bg-slate-900/50 border-slate-800 hover:border-purple-500/50 hover:bg-slate-900/80'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono text-sm font-black text-slate-500 group-hover:text-purple-400">
+                      {domain.id}
+                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-slate-800/80 flex items-center justify-center text-cyan-400">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <h3 className="font-black text-base text-white mb-2">{domain.title}</h3>
+                  <p className="text-xs text-slate-400 leading-relaxed">{domain.desc}</p>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-800/60 flex items-center justify-between text-xs font-mono font-semibold">
+                  <span className="text-purple-400">{domain.count}</span>
+                  <span className="text-slate-400 flex items-center gap-1 group-hover:text-cyan-400">
+                    Explore <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 5. PLATFORM TOOLKIT (8 PRODUCTS) */}
+      <div className="space-y-6">
+        <div>
+          <div className="text-xs uppercase tracking-wider text-pink-400 font-bold mb-1 flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5" />
+            Ecosystem Access
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Your Platform Toolkit
+          </h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Included in your student account: cloud sandboxes, AI evaluation, voice mock interviews, and talent network.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {toolkits.map((tool, idx) => {
+            const Icon = tool.icon;
+            return (
+              <div 
+                key={idx}
+                className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 hover:bg-slate-900/80 transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center">
+                      <Icon className={`w-5 h-5 ${tool.color}`} />
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                      {tool.badge}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-base text-white mb-2">{tool.title}</h3>
+                  <p className="text-xs text-slate-400 leading-relaxed">{tool.desc}</p>
+                </div>
+                <div className="mt-6 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+                  <span className="text-emerald-400 font-semibold">Unlocked</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 6. FROM FIRST LESSON TO FIRST OFFER (4-STEP WALKTHROUGH) */}
+      <div className="p-8 sm:p-10 rounded-3xl bg-slate-900/80 border border-slate-800/80 space-y-8">
+        <div>
+          <div className="text-xs uppercase tracking-wider text-cyan-400 font-bold mb-1 flex items-center gap-1.5">
+            <TrendingUp className="w-3.5 h-3.5" />
+            Progression Blueprint
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            From first lesson to first offer, in one place
+          </h2>
+          <p className="text-slate-400 text-sm mt-1">
+            Follow our verified progression path from foundational concepts to production offers.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-5 rounded-2xl bg-slate-950/70 border border-slate-800">
+            <div className="w-8 h-8 rounded-lg bg-pink-500/10 border border-pink-500/30 text-pink-400 font-mono font-bold flex items-center justify-center text-xs mb-3">
+              01
+            </div>
+            <div className="font-bold text-white text-sm mb-1">Learn live &amp; self-paced</div>
+            <div className="text-xs text-slate-400 leading-relaxed">
+              Phase 0 to Phase 12 textbooks, architectural diagrams, and lab code.
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-slate-950/70 border border-slate-800">
+            <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-400 font-mono font-bold flex items-center justify-center text-xs mb-3">
+              02
+            </div>
+            <div className="font-bold text-white text-sm mb-1">Build real systems</div>
+            <div className="text-xs text-slate-400 leading-relaxed">
+              FastAPI services, pgvector pipelines, and vLLM GPU inference containers.
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-slate-950/70 border border-slate-800">
+            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono font-bold flex items-center justify-center text-xs mb-3">
+              03
+            </div>
+            <div className="font-bold text-white text-sm mb-1">Prove with AI scoring</div>
+            <div className="text-xs text-slate-400 leading-relaxed">
+              Automated system design rubric evaluations and code quality reviews.
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-slate-950/70 border border-slate-800">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono font-bold flex items-center justify-center text-xs mb-3">
+              04
+            </div>
+            <div className="font-bold text-white text-sm mb-1">One profile, direct offers</div>
+            <div className="text-xs text-slate-400 leading-relaxed">
+              Showcase verified code repositories directly to partner engineering leads.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 7. CURRICULUM COMPARISON MATRIX */}
       <div className="bg-slate-900/90 rounded-3xl border border-slate-800/80 p-8 space-y-6 rgb-glow-card hover:border-purple-500/40">
         <div>
           <div className="text-xs uppercase tracking-wider text-purple-400 font-bold mb-1 flex items-center gap-1.5">
@@ -308,13 +596,13 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
               </tr>
               <tr className="hover:bg-slate-800/30 transition-colors">
                 <td className="py-3.5 px-4 font-semibold text-white">Primary Focus</td>
-                <td className="py-3.5 px-4">Model steering, advanced RAG, multi-agent graphs & fine-tuning</td>
-                <td className="py-3.5 px-4">Production backend, identity, data pipelines, Kubernetes & client delivery</td>
+                <td className="py-3.5 px-4">Model steering, advanced RAG, multi-agent graphs &amp; fine-tuning</td>
+                <td className="py-3.5 px-4">Production backend, identity, data pipelines, Kubernetes &amp; client delivery</td>
               </tr>
               <tr className="hover:bg-slate-800/30 transition-colors">
                 <td className="py-3.5 px-4 font-semibold text-white">Interactive Reading</td>
-                <td className="py-3.5 px-4">8 Detailed Module Breakdowns & Lab Blueprints</td>
-                <td className="py-3.5 px-4">30 Ready Textbook Chapters with Code & 16 Architecture Diagrams</td>
+                <td className="py-3.5 px-4">8 Detailed Module Breakdowns &amp; Lab Blueprints</td>
+                <td className="py-3.5 px-4">30 Ready Textbook Chapters with Code &amp; 16 Architecture Diagrams</td>
               </tr>
               <tr className="hover:bg-slate-800/30 transition-colors">
                 <td className="py-3.5 px-4 font-semibold text-white">Capstone Project</td>
@@ -326,7 +614,7 @@ export default function Home({ user, curriculum, onNavigate, onSelectChapter, on
         </div>
       </div>
 
-      {/* The 7-Day Weekly Mastery Rhythm */}
+      {/* 8. THE 13.5H/WEEK MASTERY ENGINE */}
       <div className="bg-slate-900/90 text-white rounded-3xl p-8 border border-slate-800/80 space-y-6 rgb-glow-card hover:border-cyan-500/40">
         <div className="max-w-2xl">
           <div className="text-cyan-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
