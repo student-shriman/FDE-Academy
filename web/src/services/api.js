@@ -40,6 +40,26 @@ export async function apiSignIn(identifier, password) {
   return data.user;
 }
 
+export async function apiGoogleSignIn(credential) {
+  let res;
+  try {
+    res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential }),
+    });
+  } catch (networkErr) {
+    throw new Error('Could not connect to backend server. Please verify the API service is active.');
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Google authentication failed. Please try again.');
+  }
+  const data = await res.json();
+  return data.user;
+}
+
 export async function apiGetProgress(userId) {
   if (!userId) return null;
   try {

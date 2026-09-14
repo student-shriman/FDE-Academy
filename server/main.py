@@ -3,6 +3,7 @@ import sqlite3
 import hashlib
 import hmac
 import re
+import httpx
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,6 +26,20 @@ def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+def init_db():
+    """Ensure database schema includes SSO columns."""
+    conn = get_db()
+    cursor = conn.cursor()
+    columns = [row[1] for row in cursor.execute("PRAGMA table_info(users)").fetchall()]
+    if "google_id" not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN google_id TEXT")
+    if "avatar_url" not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN avatar_url TEXT")
+    conn.commit()
+    conn.close()
+
+init_db()
 
 # Password hashing utilities using standard library hashlib
 def hash_password(password: str) -> str:
@@ -56,6 +71,10 @@ class SignInRequest(BaseModel):
     email: Optional[str] = None
     password: str = Field(..., min_length=1)
 
+class GoogleAuthRequest(BaseModel):
+    credential: str = Field(..., description="Google ID Token JWT")
+    client_id: Optional[str] = None
+
 class UserResponse(BaseModel):
     id: int
     name: str
@@ -63,6 +82,7 @@ class UserResponse(BaseModel):
     auth_type: str
     email: Optional[str] = None
     phone: Optional[str] = None
+    avatar_url: Optional[str] = None
     role: str
 
 class ToggleProgressRequest(BaseModel):
@@ -200,6 +220,7 @@ def sign_in(payload: SignInRequest):
             detail="Invalid credentials. Please verify your Gmail/phone and password."
         )
     
+    avatar = row["avatar_url"] if "avatar_url" in row.keys() else None
     return {
         "status": "success",
         "user": {
@@ -209,9 +230,133 @@ def sign_in(payload: SignInRequest):
             "auth_type": row["auth_type"] or "gmail",
             "email": row["email"],
             "phone": row["phone"],
+            "avatar_url": avatar,
             "role": row["role"] or "Forward Deployed Engineer"
         }
     }
+
+@app.post("/api/auth/google")
+async def google_auth(payload: GoogleAuthRequest):
+    credential = payload.credential.strip()
+    if not credential:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing Google credential token."
+        )
+    
+    user_info = None
+    
+    # Dev / Demo mode support for testing without client ID
+    if credential.startswith("demo_"):
+        user_info = {
+            "sub": "demo_google_998877",
+            "email": "google.engineer@gmail.com",
+            "name": "Google AI Engineer",
+            "picture": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
+        }
+    else:
+        # Validate with Google tokeninfo service
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={credential}")
+                if res.status_code != 200:
+                    err_msg = "Invalid or expired Google token."
+                    try:
+                        err_json = res.json()
+                        err_msg = err_json.get("error_description", err_json.get("error", err_msg))
+                    except Exception:
+                        pass
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail=f"Google authentication failed: {err_msg}"
+                    )
+                user_info = res.json()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Unable to connect to Google verification service: {exc}"
+            )
+            
+    if not user_info or not user_info.get("email"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google profile did not provide a verified email."
+        )
+
+    google_id = user_info.get("sub")
+    email = user_info.get("email").strip().lower()
+    name = user_info.get("name", "").strip() or email.split("@")[0]
+    avatar_url = user_info.get("picture")
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Check if user already exists by google_id OR by email
+    cursor.execute(
+        """
+        SELECT id, name, identifier, auth_type, email, phone, avatar_url, role
+        FROM users
+        WHERE (google_id IS NOT NULL AND google_id = ?) OR (email IS NOT NULL AND email = ?)
+        """,
+        (google_id, email)
+    )
+    existing = cursor.fetchone()
+
+    if existing:
+        user_id = existing["id"]
+        # Link google_id and update avatar_url if newly available
+        cursor.execute(
+            """
+            UPDATE users 
+            SET google_id = COALESCE(google_id, ?),
+                avatar_url = COALESCE(?, avatar_url)
+            WHERE id = ?
+            """,
+            (google_id, avatar_url, user_id)
+        )
+        conn.commit()
+        
+        final_user = {
+            "id": user_id,
+            "name": existing["name"] or name,
+            "identifier": existing["identifier"] or email,
+            "auth_type": "google",
+            "email": existing["email"] or email,
+            "phone": existing["phone"],
+            "avatar_url": avatar_url or existing["avatar_url"],
+            "role": existing["role"] or "Forward Deployed Engineer"
+        }
+        conn.close()
+        return {"status": "success", "user": final_user}
+    else:
+        # Create brand new user via Google SSO with non-guessable SSO sentinel hash
+        sso_dummy_hash = f"SSO_GOOGLE_{os.urandom(16).hex()}"
+        cursor.execute(
+            """
+            INSERT INTO users (name, identifier, auth_type, email, google_id, avatar_url, password_hash, role)
+            VALUES (?, ?, 'google', ?, ?, ?, ?, 'Forward Deployed Engineer')
+            """,
+            (name, email, email, google_id, avatar_url, sso_dummy_hash)
+        )
+        user_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+
+        return {
+            "status": "success",
+            "user": {
+                "id": user_id,
+                "name": name,
+                "identifier": email,
+                "auth_type": "google",
+                "email": email,
+                "phone": None,
+                "avatar_url": avatar_url,
+                "role": "Forward Deployed Engineer"
+            }
+        }
 
 # --- COVERAGE & PROGRESS ENDPOINTS ---
 

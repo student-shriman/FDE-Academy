@@ -83,10 +83,18 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
           )}
 
           <div className="hidden sm:flex items-center gap-2.5 text-right">
-            <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 flex items-center justify-center">
-              <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-cyan-300 font-bold text-xs">
-                {(user.name || user.identifier || 'U').charAt(0).toUpperCase()}
-              </div>
+            <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 flex items-center justify-center overflow-hidden">
+              {user.avatar_url ? (
+                <img 
+                  src={user.avatar_url} 
+                  alt={user.name} 
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-cyan-300 font-bold text-xs">
+                  {(user.name || user.identifier || 'U').charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
             <div className="text-left text-xs">
               <div className="font-semibold text-slate-200 truncate max-w-[120px]">{user.name}</div>
