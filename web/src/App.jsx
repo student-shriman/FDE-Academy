@@ -24,19 +24,14 @@ export default function App() {
   // Progress State from SQLite
   const [progress, setProgress] = useState(null);
 
-  // Routing State: 'landing', 'login', 'home', 'courses', 'course-detail', 'preface', 'contents', 'reader'
+  // Routing State: 'home', 'login', 'courses', 'course-detail', 'preface', 'contents', 'reader'
   const [currentView, setCurrentView] = useState(() => {
     try {
       const hash = window.location.hash.replace('#', '') || '';
-      const saved = localStorage.getItem('fde_user');
-      const parsedUser = saved ? JSON.parse(saved) : null;
-      if (!parsedUser) {
-        return (hash === 'login' || hash === 'signup') ? 'login' : 'landing';
-      }
-      if (hash === 'landing') return 'landing';
+      if (hash === 'login' || hash === 'signup') return 'login';
       return hash || 'home';
     } catch {
-      return 'landing';
+      return 'home';
     }
   });
 
@@ -75,17 +70,20 @@ export default function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') || '';
+      if (hash === 'login' || hash === 'signup') {
+        setCurrentView('login');
+        return;
+      }
       if (!user) {
-        if (hash === 'login' || hash === 'signup') {
-          setCurrentView('login');
+        if (hash === 'home' || hash === '' || hash === 'landing') {
+          setCurrentView('home');
         } else {
-          setCurrentView('landing');
+          setCurrentView('login');
         }
         return;
       }
-      if (hash === 'landing') {
-        setCurrentView('landing');
-      } else if (hash.startsWith('reader/')) {
+      // Authenticated routing
+      if (hash.startsWith('reader/')) {
         const cId = hash.replace('reader/', '');
         setActiveChapterId(cId || 'chapter-1');
         setCurrentView('reader');
@@ -99,7 +97,7 @@ export default function App() {
         setCurrentView('preface');
       } else if (hash === 'contents') {
         setCurrentView('contents');
-      } else if (hash === 'home' || hash === '') {
+      } else {
         setCurrentView('home');
       }
     };
@@ -130,7 +128,7 @@ export default function App() {
       console.error(e);
     }
     window.location.hash = '';
-    setCurrentView('landing');
+    setCurrentView('home');
   };
 
   const navigateTo = (viewId) => {
@@ -138,10 +136,12 @@ export default function App() {
       window.location.hash = `reader/${activeChapterId}`;
     } else if (viewId === 'courses') {
       window.location.hash = 'courses';
-    } else if (viewId === 'landing') {
-      window.location.hash = 'landing';
     } else if (viewId === 'login') {
       window.location.hash = 'login';
+    } else if (viewId === 'home' || viewId === 'landing') {
+      window.location.hash = '';
+      setCurrentView('home');
+      return;
     } else {
       window.location.hash = viewId;
     }
@@ -160,19 +160,8 @@ export default function App() {
     setCurrentView('course-detail');
   };
 
-  // View: Landing Page (Available to both visitors and logged in users who explore)
-  if (currentView === 'landing') {
-    return (
-      <Landing
-        onNavigate={navigateTo}
-        onSelectCourse={handleSelectCourse}
-        user={user}
-      />
-    );
-  }
-
-  // View: Login/Sign-Up for unauthenticated visitors
-  if (!user || currentView === 'login') {
+  // View: Login/Sign-Up
+  if (currentView === 'login' || (!user && currentView !== 'home' && currentView !== 'landing')) {
     return <Login onLogin={handleLogin} onNavigate={navigateTo} />;
   }
 
