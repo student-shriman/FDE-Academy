@@ -13,7 +13,7 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur border-b border-slate-800 text-white">
+    <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Brand */}
@@ -21,22 +21,25 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
           onClick={() => onNavigate('home')} 
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-500 via-amber-400 to-blue-500 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-            AI
+          <div className="relative w-10 h-10 rounded-xl p-[1.5px] bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 group-hover:shadow-lg group-hover:shadow-purple-500/40 transition-all">
+            <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-white font-black text-sm">
+              AI
+            </div>
           </div>
           <div>
-            <div className="font-bold tracking-tight text-lg flex items-center gap-2">
-              AI Academy
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                Masterclass &bull; FDE
+            <div className="font-extrabold tracking-tight text-lg flex items-center gap-2">
+              <span className="text-white">AI</span>
+              <span className="rgb-gradient-text">Academy</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                RGB Edition
               </span>
             </div>
-            <div className="text-xs text-slate-400">AI Engineer &rarr; AI Architect</div>
+            <div className="text-xs text-slate-400">Masterclass &bull; Forward Deployed Architect</div>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id || (item.id === 'courses' && currentView.startsWith('course/'));
@@ -44,13 +47,13 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-amber-500 text-slate-950 shadow-md font-semibold'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                    ? 'bg-gradient-to-r from-pink-500/20 via-purple-500/25 to-cyan-500/20 text-white border border-purple-500/50 shadow-md shadow-purple-500/20 font-bold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-pink-400' : 'text-slate-400'}`} />
                 {item.label}
               </button>
             );
@@ -64,28 +67,30 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
           {progress && (
             <div 
               onClick={() => onNavigate('contents')}
-              className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs cursor-pointer hover:border-amber-400 transition-colors"
+              className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700/80 hover:border-purple-400 text-xs cursor-pointer transition-all hover:shadow-md hover:shadow-purple-500/20"
               title="Click to view full coverage in Table of Contents"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 animate-pulse" />
               <div className="text-left leading-tight">
                 <div className="text-slate-300 font-mono text-[11px]">
-                  {progress.total_completed} / {progress.total_subtopics} Covered
+                  {progress.total_completed} / {progress.total_subtopics} Done
                 </div>
-                <div className="text-amber-400 font-bold font-mono text-[10px]">
-                  {progress.overall_percentage}% &middot; {progress.completed_hours}h Logged
+                <div className="rgb-gradient-text font-black font-mono text-[11px]">
+                  {progress.overall_percentage}% &middot; {progress.completed_hours}h
                 </div>
               </div>
             </div>
           )}
 
-          <div className="hidden sm:flex items-center gap-2 text-right">
-            <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-400 font-bold text-sm">
-              {(user.name || user.identifier || 'U').charAt(0).toUpperCase()}
+          <div className="hidden sm:flex items-center gap-2.5 text-right">
+            <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 flex items-center justify-center">
+              <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-cyan-300 font-bold text-xs">
+                {(user.name || user.identifier || 'U').charAt(0).toUpperCase()}
+              </div>
             </div>
             <div className="text-left text-xs">
-              <div className="font-semibold text-slate-200 truncate max-w-[130px]">{user.name}</div>
-              <div className="text-slate-400 font-mono text-[10px] truncate max-w-[130px]" title={user.identifier || user.email || user.phone}>
+              <div className="font-semibold text-slate-200 truncate max-w-[120px]">{user.name}</div>
+              <div className="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title={user.identifier || user.email || user.phone}>
                 {user.identifier || user.email || user.phone || 'Student'}
               </div>
             </div>
@@ -94,13 +99,16 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
           <button
             onClick={onLogout}
             title="Sign Out"
-            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer"
+            className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-900 rounded-lg transition-colors cursor-pointer"
           >
             <LogOut className="w-5 h-5" />
           </button>
         </div>
 
       </div>
+
+      {/* Animated RGB Laser Running Line */}
+      <div className="rgb-laser-line"></div>
     </header>
   );
 }

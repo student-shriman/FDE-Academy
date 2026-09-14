@@ -68,22 +68,23 @@ export default function Reader({
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] bg-slate-50 relative">
+    <div className="flex min-h-[calc(100vh-4rem)] bg-slate-950 relative text-slate-100">
       
       {/* 1. Left Navigation Sidebar Drawer */}
       <aside 
         className={`${
           sidebarOpen ? 'w-80 border-r' : 'w-0 border-r-0'
-        } transition-all duration-300 bg-white border-slate-200 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto hidden md:block z-30`}
+        } transition-all duration-300 bg-slate-900/95 border-slate-800 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto hidden md:block z-30`}
       >
         <div className="p-4 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-pink-400" />
               Phase 0 ({orderedChapterIds.length} Chapters)
             </span>
             <button
               onClick={() => onNavigate('contents')}
-              className="text-xs text-amber-600 hover:text-amber-700 font-semibold flex items-center gap-1 cursor-pointer"
+              className="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 cursor-pointer transition-colors"
             >
               <ListTree className="w-3.5 h-3.5" />
               <span>Full Tree</span>
@@ -93,7 +94,7 @@ export default function Reader({
           <div className="space-y-6">
             {p0Topics.map((topic, tIdx) => (
               <div key={tIdx} className="space-y-1.5">
-                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide px-2">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wide px-2">
                   Module {tIdx + 1}: {topic.topic_name}
                 </div>
                 
@@ -106,20 +107,20 @@ export default function Reader({
                       <button
                         key={sIdx}
                         onClick={() => onSelectChapter(sub.chapter_id)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-all cursor-pointer ${
                           isActive
-                            ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
+                            ? 'rgb-glow-btn text-white font-bold shadow-[0_0_15px_rgba(168,85,247,0.35)]'
                             : isSubDone
-                            ? 'text-emerald-900 bg-emerald-50/70 hover:bg-emerald-100'
-                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            ? 'text-emerald-300 bg-emerald-950/30 hover:bg-emerald-900/40 border border-emerald-500/20'
+                            : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
                         }`}
                       >
                         <span className="truncate pr-2 flex items-center gap-1.5">
-                          {isSubDone && <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />}
+                          {isSubDone && <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />}
                           <span className="truncate">{sub.name}</span>
                         </span>
                         {sub.track?.includes('Mandatory') && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" title="Mandatory Addition"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-pink-500 shrink-0 shadow-[0_0_6px_rgba(236,72,153,0.8)]" title="Mandatory Addition"></span>
                         )}
                       </button>
                     );
@@ -135,11 +136,11 @@ export default function Reader({
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-8 py-10">
         
         {/* Top Floating Utility Bar */}
-        <div className="flex items-center justify-between pb-6 mb-6 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-6 mb-6 border-b border-slate-800">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 hidden md:flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+              className="p-1.5 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300 hidden md:flex items-center gap-1.5 text-xs font-medium cursor-pointer transition-colors"
               title="Toggle chapter sidebar"
             >
               <Sidebar className="w-4 h-4" />
@@ -148,9 +149,9 @@ export default function Reader({
 
             <button
               onClick={() => onNavigate('contents')}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 flex items-center gap-1.5 text-xs font-medium cursor-pointer"
+              className="p-1.5 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center gap-1.5 text-xs font-medium cursor-pointer transition-colors"
             >
-              <ListTree className="w-4 h-4" />
+              <ListTree className="w-4 h-4 text-pink-400" />
               <span>Contents Page</span>
             </button>
           </div>
@@ -160,13 +161,13 @@ export default function Reader({
             {currentItem && (
               <button
                 onClick={() => onToggleProgress(currentItem.subId, chapterId)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                   isCompleted
-                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
-                    : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm hover:scale-105 active:scale-95'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                    : 'rgb-glow-btn text-white shadow-sm hover:scale-105 active:scale-95'
                 }`}
               >
-                <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-600' : 'text-slate-950'}`} />
+                <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-400' : 'text-white'}`} />
                 <span>{isCompleted ? 'Completed in SQLite' : 'Mark Completed'}</span>
               </button>
             )}
@@ -182,42 +183,42 @@ export default function Reader({
           <article className="space-y-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-600 font-mono">
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 font-mono">
                   {currentChapter.number}
                 </span>
-                <span className="text-slate-300">&bull;</span>
+                <span className="text-slate-600">&bull;</span>
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                   currentChapter.track?.includes('Mandatory')
-                    ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                    : 'bg-blue-50 text-blue-700 border border-blue-200'
+                    ? 'bg-pink-500/20 text-pink-300 border border-pink-500/30'
+                    : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                 }`}>
                   {currentChapter.track}
                 </span>
                 {isCompleted && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                     Completed
                   </span>
                 )}
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
                 {currentChapter.title}
               </h1>
             </div>
 
             {/* Injected Book Content (Theory, Diagrams, Code, Checklists, Pitfalls) */}
             <div 
-              className="reader-content bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-sm text-slate-800"
+              className="reader-content bg-slate-900/80 p-6 sm:p-10 rounded-2xl border border-slate-800/90 shadow-xl text-slate-200 rgb-glow-card hover:border-cyan-500/30 transition-colors"
               onClick={handleContentClick}
               dangerouslySetInnerHTML={{ __html: currentChapter.html }}
             />
 
             {/* Completion Toggle Card at bottom of chapter */}
-            <div className="p-5 bg-white border border-slate-200 rounded-2xl flex items-center justify-between gap-4 shadow-sm">
+            <div className="p-5 bg-slate-900/90 border border-slate-800 rounded-2xl flex items-center justify-between gap-4 shadow-xl rgb-glow-card hover:border-emerald-500/40">
               <div>
-                <div className="font-bold text-sm text-slate-900">Finished this chapter?</div>
-                <div className="text-xs text-slate-500">Save your progress directly into the SQLite database.</div>
+                <div className="font-bold text-sm text-white">Finished this chapter?</div>
+                <div className="text-xs text-slate-400">Save your progress directly into the SQLite database.</div>
               </div>
 
               {currentItem && (
@@ -225,8 +226,8 @@ export default function Reader({
                   onClick={() => onToggleProgress(currentItem.subId, chapterId)}
                   className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
                     isCompleted
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
-                      : 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                      : 'rgb-glow-btn text-white shadow-md'
                   }`}
                 >
                   <CheckCircle2 className="w-4 h-4" />
@@ -236,15 +237,15 @@ export default function Reader({
             </div>
 
             {/* Bottom Chapter Navigation Buttons */}
-            <div className="pt-8 border-t border-slate-200 flex items-center justify-between gap-4">
+            <div className="pt-8 border-t border-slate-800 flex items-center justify-between gap-4">
               {prevChapter ? (
                 <button
                   onClick={() => onSelectChapter(prevChapter.id)}
-                  className="px-5 py-3 rounded-xl border border-slate-300 hover:border-slate-400 bg-white text-slate-700 font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-all hover:-translate-x-1 cursor-pointer text-left"
+                  className="px-5 py-3 rounded-xl border border-slate-700 hover:border-slate-600 bg-slate-900 text-slate-300 font-semibold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-all hover:-translate-x-1 cursor-pointer text-left hover:text-white"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-400">Previous</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-500">Previous</div>
                     <div className="truncate max-w-[140px] sm:max-w-xs">{prevChapter.name}</div>
                   </div>
                 </button>
@@ -253,10 +254,10 @@ export default function Reader({
               {nextChapter ? (
                 <button
                   onClick={() => onSelectChapter(nextChapter.id)}
-                  className="px-5 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-amber-500/20 transition-all hover:translate-x-1 cursor-pointer text-right"
+                  className="px-5 py-3 rounded-xl rgb-glow-btn text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all hover:translate-x-1 cursor-pointer text-right"
                 >
                   <div>
-                    <div className="text-[10px] uppercase font-bold text-slate-800">Next Chapter</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-200">Next Chapter</div>
                     <div className="truncate max-w-[140px] sm:max-w-xs">{nextChapter.name}</div>
                   </div>
                   <ChevronRight className="w-4 h-4" />
@@ -280,13 +281,13 @@ export default function Reader({
       {/* 3. Image Full-Screen Zoom Modal */}
       {zoomImage && (
         <div 
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setZoomImage(null)}
         >
-          <div className="relative max-w-5xl max-h-[90vh] bg-white p-4 rounded-2xl shadow-2xl overflow-auto">
+          <div className="relative max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-2xl overflow-auto text-slate-200">
             <button
               onClick={() => setZoomImage(null)}
-              className="absolute top-4 right-4 p-2 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 p-2 bg-slate-800 text-white rounded-full hover:bg-slate-700 transition-colors cursor-pointer border border-slate-600"
             >
               <X className="w-5 h-5" />
             </button>
@@ -295,7 +296,7 @@ export default function Reader({
               alt={zoomImage.alt} 
               className="w-full h-auto rounded-lg"
             />
-            <p className="text-center text-xs text-slate-500 italic mt-3">
+            <p className="text-center text-xs text-slate-400 italic mt-3">
               {zoomImage.alt}
             </p>
           </div>

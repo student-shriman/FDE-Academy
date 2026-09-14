@@ -153,30 +153,31 @@ export default function Login({ onLogin }) {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
       
-      {/* Ambient background glow */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* Ambient RGB background glow */}
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-pink-500/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="max-w-md w-full relative z-10">
         
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-cyan-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
             Academy Student Portal
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            FDE Academy
+            AI <span className="rgb-gradient-text">Academy</span>
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-400">
             {isSignUp 
-              ? 'Register with your Gmail ID or Mobile Phone to track curriculum coverage.'
+              ? 'Register with your Gmail ID or Mobile Phone to access Masterclass & FDE tracks.'
               : 'Sign in to sync your topic coverage and chapters with SQLite.'}
           </p>
         </div>
 
-        {/* Card Container */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm space-y-6">
+        {/* RGB Glowing Card Container */}
+        <div className="rgb-border-box p-6 sm:p-8 shadow-2xl backdrop-blur-md space-y-6">
           
           {/* Sign In vs Sign Up Tabs */}
           <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
@@ -185,7 +186,7 @@ export default function Login({ onLogin }) {
               onClick={() => { setIsSignUp(false); setError(''); }}
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 !isSignUp 
-                  ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold' 
+                  ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white shadow-lg shadow-purple-500/30 font-black' 
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -198,7 +199,7 @@ export default function Login({ onLogin }) {
               onClick={() => { setIsSignUp(true); setError(''); setSuccessMessage(''); }}
               className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 isSignUp 
-                  ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold' 
+                  ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white shadow-lg shadow-purple-500/30 font-black' 
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -469,7 +470,7 @@ export default function Login({ onLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              className="w-full mt-2 rgb-glow-btn disabled:opacity-50 text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
               {loading ? (
                 <span>Connecting to SQLite database...</span>

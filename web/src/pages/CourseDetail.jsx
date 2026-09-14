@@ -73,12 +73,12 @@ export default function CourseDetail({
           </h2>
         </div>
 
-        <div className="flex items-center gap-2 p-1 bg-slate-900 border border-slate-800 rounded-2xl">
+        <div className="flex items-center gap-2 p-1.5 bg-slate-900/90 border border-slate-800 rounded-2xl">
           <button
             onClick={() => handleSwitchCourse('ai-masterclass')}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeCourseId === 'ai-masterclass'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+                ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)]'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -90,7 +90,7 @@ export default function CourseDetail({
             onClick={() => handleSwitchCourse('fde')}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeCourseId === 'fde'
-                ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20 font-black'
+                ? 'rgb-glow-btn text-white shadow-[0_0_20px_rgba(236,72,153,0.4)]'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
@@ -101,26 +101,31 @@ export default function CourseDetail({
       </div>
 
       {/* Hero Banner */}
-      <div className={`relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 border ${course.borderGlow} p-8 sm:p-12 overflow-hidden shadow-2xl`}>
-        <div className={`absolute top-0 right-0 w-96 h-96 ${isAIMasterclass ? 'bg-blue-500/10' : 'bg-amber-500/10'} rounded-full blur-3xl pointer-events-none`}></div>
+      <div className={`relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 border ${course.borderGlow} p-8 sm:p-12 overflow-hidden shadow-2xl rgb-glow-card`}>
+        <div className={`absolute top-0 right-0 w-96 h-96 ${isAIMasterclass ? 'bg-cyan-500/10' : 'bg-pink-500/10'} rounded-full blur-3xl pointer-events-none`}></div>
         
+        {/* RGB Laser Top Highlight */}
+        <div className="absolute top-0 left-0 right-0">
+          <div className="rgb-laser-line opacity-60"></div>
+        </div>
+
         <div className="relative z-10 max-w-4xl space-y-6">
           <div className="flex flex-wrap items-center gap-3">
-            <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+            <span className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
               isAIMasterclass 
-                ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' 
-                : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]' 
+                : 'bg-pink-500/20 text-pink-300 border border-pink-500/30 shadow-[0_0_15px_rgba(236,72,153,0.2)]'
             }`}>
               <Sparkles className="w-3.5 h-3.5" />
               {course.badge}
             </span>
-            <span className="text-xs font-semibold text-slate-400 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700">
+            <span className="text-xs font-semibold text-slate-300 px-3 py-1 rounded-full bg-slate-950/80 border border-slate-800">
               {course.level}
             </span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-            {course.title}
+            <span className="rgb-gradient-text animate-rgb-flow">{course.title}</span>
           </h1>
 
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
@@ -136,7 +141,7 @@ export default function CourseDetail({
                     const el = document.getElementById('curriculum-syllabus');
                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm flex items-center gap-2.5 shadow-lg shadow-blue-600/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center gap-2.5 shadow-lg shadow-cyan-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>Explore 8 Modules Syllabus</span>
@@ -145,7 +150,7 @@ export default function CourseDetail({
 
                 <button
                   onClick={() => onNavigate('home')}
-                  className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm flex items-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                  className="px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-white font-semibold text-sm flex items-center gap-2 border border-slate-700 transition-colors cursor-pointer"
                 >
                   <Compass className="w-4 h-4" />
                   <span>Back to Academy Overview</span>
@@ -155,7 +160,7 @@ export default function CourseDetail({
               <>
                 <button
                   onClick={() => onSelectChapter('chapter-1')}
-                  className="px-6 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm flex items-center gap-2.5 shadow-lg shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  className="px-6 py-3.5 rounded-xl rgb-glow-btn text-white font-bold text-sm flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                 >
                   <GraduationCap className="w-4 h-4" />
                   <span>Launch Phase 0 Reader (30 Chapters)</span>
@@ -164,15 +169,15 @@ export default function CourseDetail({
 
                 <button
                   onClick={() => onNavigate('contents')}
-                  className="px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm flex items-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                  className="px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-white font-semibold text-sm flex items-center gap-2 border border-slate-700 transition-colors cursor-pointer"
                 >
-                  <ListTree className="w-4 h-4" />
+                  <ListTree className="w-4 h-4 text-pink-400" />
                   <span>View 13-Phase Table of Contents</span>
                 </button>
 
                 <button
                   onClick={() => onNavigate('preface')}
-                  className="px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center gap-2 border border-slate-700 transition-colors cursor-pointer"
+                  className="px-6 py-3.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 text-slate-300 font-semibold text-sm flex items-center gap-2 border border-slate-700/60 transition-colors cursor-pointer"
                 >
                   <span>Read FDE Manifesto</span>
                 </button>
@@ -184,16 +189,16 @@ export default function CourseDetail({
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+        <div className="bg-slate-900/90 p-6 rounded-2xl border border-slate-800/80 rgb-glow-card hover:border-cyan-500/40">
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-blue-400" />
+            <Clock className="w-4 h-4 text-cyan-400" />
             <span>Duration</span>
           </div>
           <div className="text-3xl font-black text-white">{course.duration}</div>
           <div className="text-xs text-slate-500 mt-1">{course.estimatedHours} intensive curriculum</div>
         </div>
 
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+        <div className="bg-slate-900/90 p-6 rounded-2xl border border-slate-800/80 rgb-glow-card hover:border-emerald-500/40">
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-2">
             <Layers className="w-4 h-4 text-emerald-400" />
             <span>Curriculum Scope</span>
@@ -206,12 +211,12 @@ export default function CourseDetail({
           </div>
         </div>
 
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+        <div className="bg-slate-900/90 p-6 rounded-2xl border border-slate-800/80 rgb-glow-card hover:border-pink-500/40">
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-amber-400" />
+            <Terminal className="w-4 h-4 text-pink-400" />
             <span>Practical Labs</span>
           </div>
-          <div className="text-3xl font-black text-amber-400">
+          <div className="text-3xl font-black text-pink-400">
             {isAIMasterclass ? '10 Labs' : '30 Ready Chapters'}
           </div>
           <div className="text-xs text-slate-500 mt-1">
@@ -219,7 +224,7 @@ export default function CourseDetail({
           </div>
         </div>
 
-        <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+        <div className="bg-slate-900/90 p-6 rounded-2xl border border-slate-800/80 rgb-glow-card hover:border-purple-500/40">
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1 flex items-center gap-2">
             <Award className="w-4 h-4 text-purple-400" />
             <span>Capstone Milestone</span>
@@ -482,7 +487,10 @@ export default function CourseDetail({
       </div>
 
       {/* Capstone Spotlight Card */}
-      <div className="p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 space-y-4">
+      <div className="relative p-8 rounded-3xl bg-slate-900/90 border border-slate-800/80 space-y-4 rgb-glow-card hover:border-purple-500/50 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0">
+          <div className="rgb-laser-line opacity-50"></div>
+        </div>
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-400">
           <Sparkles className="w-4 h-4" />
           <span>Program Capstone Milestone</span>

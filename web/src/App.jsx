@@ -141,7 +141,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col selection:bg-amber-500 selection:text-slate-950">
+    <div className="min-h-screen bg-[#030712] text-slate-100 flex flex-col selection:bg-pink-500 selection:text-white relative">
+      {/* Ambient background RGB glow blobs */}
+      <div className="fixed top-0 left-1/4 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-cyan-600/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
       {/* Global Navigation Bar with Live Progress */}
       <Navbar
         currentView={currentView}
