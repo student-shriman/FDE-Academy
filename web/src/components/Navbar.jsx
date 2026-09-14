@@ -1,14 +1,15 @@
 import React from 'react';
-import { BookOpen, Compass, ListTree, LogOut, GraduationCap, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Compass, ListTree, LogOut, GraduationCap, CheckCircle2, Layers } from 'lucide-react';
 
 export default function Navbar({ currentView, user, progress, onNavigate, onLogout }) {
   if (!user || currentView === 'login') return null;
 
   const navItems = [
-    { id: 'home', label: 'Dashboard', icon: Compass, hash: '#home' },
+    { id: 'home', label: 'Home', icon: Compass, hash: '#home' },
+    { id: 'courses', label: 'Courses', icon: Layers, hash: '#courses' },
+    { id: 'contents', label: 'FDE Syllabus', icon: ListTree, hash: '#contents' },
+    { id: 'reader', label: 'Phase 0 Reader', icon: GraduationCap, hash: '#reader/chapter-1' },
     { id: 'preface', label: 'Preface', icon: BookOpen, hash: '#preface' },
-    { id: 'contents', label: 'Contents & Hierarchy', icon: ListTree, hash: '#contents' },
-    { id: 'reader', label: 'Reader', icon: GraduationCap, hash: '#reader/chapter-1' },
   ];
 
   return (
@@ -20,14 +21,14 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
           onClick={() => onNavigate('home')} 
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-500 to-amber-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-            FDE
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-amber-500 via-amber-400 to-blue-500 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+            AI
           </div>
           <div>
             <div className="font-bold tracking-tight text-lg flex items-center gap-2">
-              FDE Academy
+              AI Academy
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                Phase 0 Edition
+                Masterclass &bull; FDE
               </span>
             </div>
             <div className="text-xs text-slate-400">AI Engineer &rarr; AI Architect</div>
@@ -38,7 +39,7 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = currentView === item.id;
+            const isActive = currentView === item.id || (item.id === 'courses' && currentView.startsWith('course/'));
             return (
               <button
                 key={item.id}

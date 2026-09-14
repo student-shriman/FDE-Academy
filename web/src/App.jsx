@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import CourseDetail from './pages/CourseDetail';
 import Preface from './pages/Preface';
 import Contents from './pages/Contents';
 import Reader from './pages/Reader';
@@ -22,9 +23,10 @@ export default function App() {
   // Progress State from SQLite
   const [progress, setProgress] = useState(null);
 
-  // Routing State: 'login', 'home', 'preface', 'contents', 'reader'
+  // Routing State: 'login', 'home', 'courses', 'course-detail', 'preface', 'contents', 'reader'
   const [currentView, setCurrentView] = useState('home');
   const [activeChapterId, setActiveChapterId] = useState('chapter-1');
+  const [selectedCourseId, setSelectedCourseId] = useState('ai-masterclass');
 
   // Fetch user progress whenever user changes
   const refreshProgress = useCallback(async (userId) => {
@@ -66,6 +68,12 @@ export default function App() {
         const cId = hash.replace('reader/', '');
         setActiveChapterId(cId || 'chapter-1');
         setCurrentView('reader');
+      } else if (hash.startsWith('course/')) {
+        const cId = hash.replace('course/', '');
+        setSelectedCourseId(cId || 'ai-masterclass');
+        setCurrentView('course-detail');
+      } else if (hash === 'courses') {
+        setCurrentView('courses');
       } else if (hash === 'preface') {
         setCurrentView('preface');
       } else if (hash === 'contents') {
@@ -107,6 +115,8 @@ export default function App() {
   const navigateTo = (viewId) => {
     if (viewId === 'reader') {
       window.location.hash = `reader/${activeChapterId}`;
+    } else if (viewId === 'courses') {
+      window.location.hash = 'courses';
     } else {
       window.location.hash = viewId;
     }
@@ -119,13 +129,19 @@ export default function App() {
     setCurrentView('reader');
   };
 
+  const handleSelectCourse = (courseId) => {
+    setSelectedCourseId(courseId);
+    window.location.hash = `course/${courseId}`;
+    setCurrentView('course-detail');
+  };
+
   // If unauthenticated, show Login
   if (!user || currentView === 'login') {
     return <Login onLogin={handleLogin} />;
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-amber-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 flex flex-col selection:bg-amber-500 selection:text-slate-950">
       {/* Global Navigation Bar with Live Progress */}
       <Navbar
         currentView={currentView}
@@ -142,6 +158,16 @@ export default function App() {
             user={user}
             curriculum={curriculumData}
             progress={progress}
+            onNavigate={navigateTo}
+            onSelectChapter={handleSelectChapter}
+            onSelectCourse={handleSelectCourse}
+          />
+        )}
+
+        {(currentView === 'courses' || currentView === 'course-detail') && (
+          <CourseDetail
+            courseId={selectedCourseId}
+            onSelectCourse={handleSelectCourse}
             onNavigate={navigateTo}
             onSelectChapter={handleSelectChapter}
           />
