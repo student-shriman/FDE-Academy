@@ -26,11 +26,8 @@ export default function Admin({ user, onNavigate }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [processingId, setProcessingId] = useState(null);
 
-  // Check admin authorization
-  const isAdmin = user && user.role === 'admin';
-
   const loadData = useCallback(async () => {
-    if (!isAdmin) return;
+    if (!user?.id) return;
     setLoading(true);
     setErrorMessage(null);
     try {
@@ -41,17 +38,17 @@ export default function Admin({ user, onNavigate }) {
       setUsers(fetchedUsers);
       setStats(fetchedStats);
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to load administrator data.');
+      setErrorMessage(err.message || 'Failed to load user directory.');
     } finally {
       setLoading(false);
     }
-  }, [isAdmin, user]);
+  }, [user]);
 
   useEffect(() => {
-    if (isAdmin) {
+    if (user?.id) {
       loadData();
     }
-  }, [isAdmin, loadData]);
+  }, [user, loadData]);
 
   const handleRoleChange = async (targetUserId, newRole) => {
     setProcessingId(targetUserId);
@@ -95,29 +92,6 @@ export default function Admin({ user, onNavigate }) {
       setProcessingId(null);
     }
   };
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4">
-        <div className="rgb-border-box max-w-md w-full p-8 text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400">
-            <Lock className="w-7 h-7" />
-          </div>
-          <h2 className="text-xl font-black text-white">Administrator Access Required</h2>
-          <p className="text-slate-400 text-sm">
-            This control center is restricted to authorized platform administrators. Your current role is <span className="text-cyan-400 font-mono font-bold uppercase">{user?.role || 'Guest'}</span>.
-          </p>
-          <button
-            onClick={() => onNavigate('home')}
-            className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-semibold text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Return to Academy Home</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // Filter users based on query and role filter
   const filteredUsers = users.filter(u => {

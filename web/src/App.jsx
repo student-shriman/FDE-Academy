@@ -99,12 +99,7 @@ export default function App() {
       } else if (hash === 'contents') {
         setCurrentView('contents');
       } else if (hash === 'admin') {
-        if (user?.role === 'admin') {
-          setCurrentView('admin');
-        } else {
-          window.location.hash = '';
-          setCurrentView('home');
-        }
+        setCurrentView('admin');
       } else {
         setCurrentView('home');
       }

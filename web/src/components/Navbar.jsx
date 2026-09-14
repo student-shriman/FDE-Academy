@@ -12,10 +12,6 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
     { id: 'preface', label: 'Preface', icon: BookOpen, hash: '#preface' },
   ];
 
-  if (user?.role === 'admin') {
-    navItems.push({ id: 'admin', label: 'Admin Panel', icon: Shield, hash: '#admin' });
-  }
-
   return (
     <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">

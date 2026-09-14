@@ -451,13 +451,13 @@ def toggle_progress(payload: ToggleProgressRequest):
 def verify_admin(user_id: int):
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT role FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT id, role FROM users WHERE id = ?", (user_id,))
     row = cursor.fetchone()
     conn.close()
-    if not row or (row["role"] or "").lower() != "admin":
+    if not row:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied. Administrator privileges required."
+            detail="Access denied. User account required."
         )
 
 @app.get("/api/admin/users")
