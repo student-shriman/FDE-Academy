@@ -23,12 +23,12 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
         >
           <div className="relative w-10 h-10 rounded-xl p-[1.5px] bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 group-hover:shadow-lg group-hover:shadow-purple-500/40 transition-all">
             <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-white font-black text-sm">
-              AI
+              FDE
             </div>
           </div>
           <div>
             <div className="font-extrabold tracking-tight text-lg flex items-center gap-2">
-              <span className="text-white">AI</span>
+              <span className="text-white">FDE</span>
               <span className="rgb-gradient-text">Academy</span>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                 RGB Edition

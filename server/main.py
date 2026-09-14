@@ -12,7 +12,7 @@ import psycopg
 from psycopg_pool import ConnectionPool
 from psycopg.rows import dict_row
 
-app = FastAPI(title="AI Academy API", version="1.0.0")
+app = FastAPI(title="FDE Academy API", version="1.0.0")
 
 # Enable CORS for Vite dev server and production
 app.add_middleware(
@@ -726,7 +726,7 @@ def get_admin_stats(admin_user_id: int = Query(...)):
 @app.get("/api/health")
 @app.get("/status")
 def health_check():
-    return {"status": "healthy", "service": "fde-academy-backend"}
+    return {"status": "healthy", "service": "fde-academy"}
 
 # --- STATIC SPA SERVING FOR PRODUCTION (Render) ---
 from fastapi.staticfiles import StaticFiles

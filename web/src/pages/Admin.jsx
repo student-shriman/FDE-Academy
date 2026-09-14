@@ -123,7 +123,7 @@ export default function Admin({ user, onNavigate }) {
               </h1>
             </div>
             <p className="text-slate-400 text-sm mt-1.5">
-              Manage user roles, platform permissions, and review real-time learner progress across AI Academy.
+              Manage user roles, platform permissions, and review real-time learner progress across FDE Academy.
             </p>
           </div>
 

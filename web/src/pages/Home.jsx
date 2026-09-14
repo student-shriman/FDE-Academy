@@ -203,12 +203,12 @@ export default function Home({ user, curriculum, progress, onNavigate, onSelectC
             >
               <div className="relative w-10 h-10 rounded-xl p-[1.5px] bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 group-hover:shadow-lg group-hover:shadow-purple-500/40 transition-all">
                 <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-white font-black text-sm">
-                  AI
+                  FDE
                 </div>
               </div>
               <div>
                 <div className="font-extrabold tracking-tight text-lg flex items-center gap-2">
-                  <span className="text-white">AI</span>
+                  <span className="text-white">FDE</span>
                   <span className="rgb-gradient-text">Academy</span>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                     RGB Edition
@@ -1068,10 +1068,10 @@ export default function Home({ user, curriculum, progress, onNavigate, onSelectC
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg p-[1px] bg-gradient-to-tr from-pink-500 to-cyan-400">
                   <div className="w-full h-full bg-slate-950 rounded-[7px] flex items-center justify-center text-white font-black text-xs">
-                    AI
+                    FDE
                   </div>
                 </div>
-                <span className="font-extrabold text-white text-base">AI Academy</span>
+                <span className="font-extrabold text-white text-base">FDE Academy</span>
               </div>
               <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
                 The modern engineering academy training the next generation of Forward Deployed AI Architects, 
@@ -1123,7 +1123,7 @@ export default function Home({ user, curriculum, progress, onNavigate, onSelectC
 
           <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-slate-500 text-xs">
-              &copy; {new Date().getFullYear()} AI Academy Inc. Inspired by high-performance engineering cultures.
+              &copy; {new Date().getFullYear()} FDE Academy Inc. Inspired by high-performance engineering cultures.
             </div>
             <div className="flex items-center gap-6 text-xs text-slate-400">
               <span className="hover:text-slate-300 cursor-pointer">Privacy Policy</span>

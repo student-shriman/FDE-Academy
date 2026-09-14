@@ -1,4 +1,4 @@
-// Google Identity Services (GIS) integration for AI Academy
+// Google Identity Services (GIS) integration for FDE Academy
 
 let gisLoadedPromise = null;
 

@@ -218,7 +218,7 @@ export default function Login({ onLogin, onNavigate }) {
             Academy Student Portal
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            AI <span className="rgb-gradient-text">Academy</span>
+            FDE <span className="rgb-gradient-text">Academy</span>
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-400">
             {isSignUp 

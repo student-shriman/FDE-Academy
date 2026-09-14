@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ai-academy
+    name: fde-academy
     runtime: docker
     plan: free
     healthCheckPath: /health

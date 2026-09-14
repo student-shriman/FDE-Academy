@@ -1,7 +1,10 @@
 # ==========================================
+# FDE Academy - Production Container Image
 # Stage 1: Build React + Vite Frontend
 # ==========================================
 FROM node:20-alpine AS frontend-builder
+LABEL maintainer="FDE Academy"
+LABEL application="fde-academy"
 
 WORKDIR /app/web
 
