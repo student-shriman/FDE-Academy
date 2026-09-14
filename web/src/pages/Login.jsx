@@ -571,7 +571,7 @@ export default function Login({ onLogin, onNavigate }) {
                 </>
               ) : (
                 <>
-                  <span>Sign In & Load Progress</span>
+                  <span>Sign In</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
