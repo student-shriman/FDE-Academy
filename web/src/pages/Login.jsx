@@ -450,6 +450,18 @@ export default function Login({ onLogin }) {
                     />
                   </div>
                 </div>
+
+                <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-left space-y-1 text-xs">
+                  <div className="text-[11px] font-semibold text-slate-400">
+                    Existing Account Credentials (SQLite):
+                  </div>
+                  <div className="text-[11px] text-slate-300 font-mono">
+                    <span className="text-amber-400 font-semibold">Gmail:</span> student.shriman@gmail.com &bull; <span className="text-amber-400 font-semibold">Pass:</span> 123456
+                  </div>
+                  <div className="text-[11px] text-slate-400 font-mono">
+                    <span className="text-blue-400 font-semibold">Phone:</span> +919876500123 &bull; <span className="text-blue-400 font-semibold">Pass:</span> PriyaPassword123!
+                  </div>
+                </div>
               </>
             )}
 
