@@ -50,6 +50,7 @@ export async function initGoogleSignIn({ clientId, onCredentialResponse, buttonR
     });
 
     if (buttonRef && buttonRef.current) {
+      buttonRef.current.innerHTML = '';
       googleId.renderButton(buttonRef.current, {
         theme: 'filled_black',
         size: 'large',
