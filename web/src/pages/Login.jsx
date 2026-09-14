@@ -553,21 +553,6 @@ export default function Login({ onLogin, onNavigate }) {
                     />
                   </div>
                 </div>
-
-                <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-left space-y-1 text-xs">
-                  <div className="text-[11px] font-semibold text-slate-400">
-                    Platform Accounts:
-                  </div>
-                  <div className="text-[11px] text-slate-300 font-mono">
-                    <span className="text-amber-400 font-semibold">Admin:</span> student.shriman@gmail.com &bull; <span className="text-amber-400 font-semibold">Pass:</span> Academy@2026
-                  </div>
-                  <div className="text-[11px] text-purple-300 font-mono">
-                    <span className="text-purple-400 font-semibold">Reviewer:</span> tusharvidyarthiaem@gmail.com &bull; <span className="text-purple-400 font-semibold">Pass:</span> Academy@2026
-                  </div>
-                  <div className="text-[11px] text-slate-400 font-mono">
-                    <span className="text-blue-400 font-semibold">Student:</span> shriman.nicholson@gmail.com &bull; <span className="text-blue-400 font-semibold">Pass:</span> Academy@2026
-                  </div>
-                </div>
               </>
             )}
 
