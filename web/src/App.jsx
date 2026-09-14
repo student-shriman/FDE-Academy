@@ -7,6 +7,7 @@ import CourseDetail from './pages/CourseDetail';
 import Preface from './pages/Preface';
 import Contents from './pages/Contents';
 import Reader from './pages/Reader';
+import Admin from './pages/Admin';
 import curriculumData from './data/curriculum.json';
 import { apiGetProgress, apiToggleProgress } from './services/api';
 
@@ -97,6 +98,13 @@ export default function App() {
         setCurrentView('preface');
       } else if (hash === 'contents') {
         setCurrentView('contents');
+      } else if (hash === 'admin') {
+        if (user?.role === 'admin') {
+          setCurrentView('admin');
+        } else {
+          window.location.hash = '';
+          setCurrentView('home');
+        }
       } else {
         setCurrentView('home');
       }
@@ -138,6 +146,8 @@ export default function App() {
       window.location.hash = 'courses';
     } else if (viewId === 'login') {
       window.location.hash = 'login';
+    } else if (viewId === 'admin') {
+      window.location.hash = 'admin';
     } else if (viewId === 'home' || viewId === 'landing') {
       window.location.hash = '';
       setCurrentView('home');
@@ -223,6 +233,13 @@ export default function App() {
             progress={progress}
             onToggleProgress={handleToggleProgress}
             onSelectChapter={handleSelectChapter}
+            onNavigate={navigateTo}
+          />
+        )}
+
+        {currentView === 'admin' && (
+          <Admin
+            user={user}
             onNavigate={navigateTo}
           />
         )}

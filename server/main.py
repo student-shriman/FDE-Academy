@@ -28,7 +28,7 @@ def get_db():
     return conn
 
 def init_db():
-    """Ensure database schema includes SSO columns."""
+    """Ensure database schema includes SSO and RBAC columns."""
     conn = get_db()
     cursor = conn.cursor()
     columns = [row[1] for row in cursor.execute("PRAGMA table_info(users)").fetchall()]
@@ -36,6 +36,8 @@ def init_db():
         cursor.execute("ALTER TABLE users ADD COLUMN google_id TEXT")
     if "avatar_url" not in columns:
         cursor.execute("ALTER TABLE users ADD COLUMN avatar_url TEXT")
+    if "role" not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'student'")
     conn.commit()
     conn.close()
 
@@ -74,6 +76,10 @@ class SignInRequest(BaseModel):
 class GoogleAuthRequest(BaseModel):
     credential: str = Field(..., description="Google ID Token JWT")
     client_id: Optional[str] = None
+
+class UpdateRoleRequest(BaseModel):
+    admin_user_id: int
+    role: str = Field(..., description="'admin', 'reviewer', or 'student'")
 
 class UserResponse(BaseModel):
     id: int
@@ -158,7 +164,7 @@ def sign_up(payload: SignUpRequest):
         INSERT INTO users (name, identifier, auth_type, email, phone, password_hash, role)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
-        (payload.name.strip(), identifier, auth_type, user_email, user_phone, pwd_hash, "Student")
+        (payload.name.strip(), identifier, auth_type, user_email, user_phone, pwd_hash, "student")
     )
     user_id = cursor.lastrowid
     conn.commit()
@@ -173,7 +179,7 @@ def sign_up(payload: SignUpRequest):
             "auth_type": auth_type,
             "email": user_email,
             "phone": user_phone,
-            "role": "Forward Deployed Engineer"
+            "role": "student"
         }
     }
 
@@ -231,7 +237,7 @@ def sign_in(payload: SignInRequest):
             "email": row["email"],
             "phone": row["phone"],
             "avatar_url": avatar,
-            "role": row["role"] or "Forward Deployed Engineer"
+            "role": (row["role"] or "student").lower()
         }
     }
 
@@ -318,6 +324,7 @@ async def google_auth(payload: GoogleAuthRequest):
         )
         conn.commit()
         
+        user_role = (existing["role"] or "student").lower()
         final_user = {
             "id": user_id,
             "name": existing["name"] or name,
@@ -326,17 +333,17 @@ async def google_auth(payload: GoogleAuthRequest):
             "email": existing["email"] or email,
             "phone": existing["phone"],
             "avatar_url": avatar_url or existing["avatar_url"],
-            "role": existing["role"] or "Forward Deployed Engineer"
+            "role": user_role
         }
         conn.close()
         return {"status": "success", "user": final_user}
     else:
-        # Create brand new user via Google SSO with non-guessable SSO sentinel hash
+        # Create brand new user via Google SSO with non-guessable SSO sentinel hash and role 'student'
         sso_dummy_hash = f"SSO_GOOGLE_{os.urandom(16).hex()}"
         cursor.execute(
             """
             INSERT INTO users (name, identifier, auth_type, email, google_id, avatar_url, password_hash, role)
-            VALUES (?, ?, 'google', ?, ?, ?, ?, 'Forward Deployed Engineer')
+            VALUES (?, ?, 'google', ?, ?, ?, ?, 'student')
             """,
             (name, email, email, google_id, avatar_url, sso_dummy_hash)
         )
@@ -354,7 +361,7 @@ async def google_auth(payload: GoogleAuthRequest):
                 "email": email,
                 "phone": None,
                 "avatar_url": avatar_url,
-                "role": "Forward Deployed Engineer"
+                "role": "student"
             }
         }
 
@@ -437,6 +444,134 @@ def toggle_progress(payload: ToggleProgressRequest):
     conn.close()
     
     # Return updated metrics immediately
+    return compute_user_metrics(payload.user_id)
+
+# --- ADMIN RBAC ENDPOINTS ---
+
+def verify_admin(user_id: int):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT role FROM users WHERE id = ?", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row or (row["role"] or "").lower() != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied. Administrator privileges required."
+        )
+
+@app.get("/api/admin/users")
+def get_admin_users(admin_user_id: int = Query(...)):
+    verify_admin(admin_user_id)
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT u.id, u.name, u.identifier, u.auth_type, u.email, u.phone, 
+               u.avatar_url, LOWER(COALESCE(u.role, 'student')) as role, u.created_at,
+               COUNT(p.subtopic_id) as completed_subtopics
+        FROM users u
+        LEFT JOIN user_progress p ON u.id = p.user_id AND p.completed = 1
+        GROUP BY u.id
+        ORDER BY u.id ASC
+        """
+    )
+    rows = cursor.fetchall()
+    conn.close()
+    users_list = []
+    for r in rows:
+        users_list.append({
+            "id": r["id"],
+            "name": r["name"],
+            "identifier": r["identifier"],
+            "auth_type": r["auth_type"] or "gmail",
+            "email": r["email"],
+            "phone": r["phone"],
+            "avatar_url": r["avatar_url"],
+            "role": r["role"],
+            "created_at": str(r["created_at"]) if r["created_at"] else None,
+            "completed_subtopics": r["completed_subtopics"]
+        })
+    return {"status": "success", "users": users_list}
+
+@app.put("/api/admin/users/{target_user_id}/role")
+def update_user_role(target_user_id: int, payload: UpdateRoleRequest):
+    verify_admin(payload.admin_user_id)
+    new_role = payload.role.strip().lower()
+    if new_role not in ["admin", "reviewer", "student"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid role. Permitted roles are 'admin', 'reviewer', or 'student'."
+        )
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, role FROM users WHERE id = ?", (target_user_id,))
+    target = cursor.fetchone()
+    if not target:
+        conn.close()
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Target user not found.")
+        
+    # Prevent demoting the last remaining admin
+    if (target["role"] or "").lower() == "admin" and new_role != "admin":
+        cursor.execute("SELECT count(*) FROM users WHERE LOWER(role) = 'admin'")
+        admin_count = cursor.fetchone()[0]
+        if admin_count <= 1:
+            conn.close()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot demote the last remaining administrator."
+            )
+            
+    cursor.execute("UPDATE users SET role = ? WHERE id = ?", (new_role, target_user_id))
+    conn.commit()
+    conn.close()
+    return {"status": "success", "user_id": target_user_id, "role": new_role}
+
+@app.delete("/api/admin/users/{target_user_id}")
+def delete_user(target_user_id: int, admin_user_id: int = Query(...)):
+    verify_admin(admin_user_id)
+    if admin_user_id == target_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Administrators cannot delete their own active account."
+        )
+        
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, role FROM users WHERE id = ?", (target_user_id,))
+    target = cursor.fetchone()
+    if not target:
+        conn.close()
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Target user not found.")
+        
+    # Delete progress and user
+    cursor.execute("DELETE FROM user_progress WHERE user_id = ?", (target_user_id,))
+    cursor.execute("DELETE FROM users WHERE id = ?", (target_user_id,))
+    conn.commit()
+    conn.close()
+    return {"status": "success", "deleted_user_id": target_user_id}
+
+@app.get("/api/admin/stats")
+def get_admin_stats(admin_user_id: int = Query(...)):
+    verify_admin(admin_user_id)
+    conn = get_db()
+    cursor = conn.cursor()
+    total_users = cursor.execute("SELECT count(*) FROM users").fetchone()[0]
+    total_admins = cursor.execute("SELECT count(*) FROM users WHERE LOWER(role) = 'admin'").fetchone()[0]
+    total_reviewers = cursor.execute("SELECT count(*) FROM users WHERE LOWER(role) = 'reviewer'").fetchone()[0]
+    total_students = cursor.execute("SELECT count(*) FROM users WHERE LOWER(role) = 'student'").fetchone()[0]
+    total_completions = cursor.execute("SELECT count(*) FROM user_progress WHERE completed = 1").fetchone()[0]
+    conn.close()
+    return {
+        "status": "success",
+        "total_users": total_users,
+        "admins": total_admins,
+        "reviewers": total_reviewers,
+        "students": total_students,
+        "total_completions": total_completions
+    }
+
 @app.get("/api/health")
 def health_check():
     return {"status": "healthy", "service": "fde-academy-backend"}

@@ -104,3 +104,49 @@ export async function apiToggleProgress(userId, subtopicId, chapterId) {
     return apiGetProgress(userId);
   }
 }
+
+// --- ADMIN RBAC API CLIENT ---
+
+export async function apiGetAdminUsers(adminUserId) {
+  const res = await fetch(`/api/admin/users?admin_user_id=${adminUserId}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to fetch users.');
+  }
+  const data = await res.json();
+  return data.users;
+}
+
+export async function apiUpdateUserRole(adminUserId, targetUserId, newRole) {
+  const res = await fetch(`/api/admin/users/${targetUserId}/role`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ admin_user_id: adminUserId, role: newRole }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to update user role.');
+  }
+  return await res.json();
+}
+
+export async function apiDeleteUser(adminUserId, targetUserId) {
+  const res = await fetch(`/api/admin/users/${targetUserId}?admin_user_id=${adminUserId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to delete user.');
+  }
+  return await res.json();
+}
+
+export async function apiGetAdminStats(adminUserId) {
+  const res = await fetch(`/api/admin/stats?admin_user_id=${adminUserId}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Failed to fetch admin stats.');
+  }
+  return await res.json();
+}
+

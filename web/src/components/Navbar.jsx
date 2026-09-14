@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Compass, ListTree, LogOut, GraduationCap, CheckCircle2, Layers, Sparkles } from 'lucide-react';
+import { BookOpen, Compass, ListTree, LogOut, GraduationCap, CheckCircle2, Layers, Sparkles, Shield } from 'lucide-react';
 
 export default function Navbar({ currentView, user, progress, onNavigate, onLogout }) {
   if (!user || currentView === 'login') return null;
@@ -11,6 +11,10 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
     { id: 'reader', label: 'Phase 0 Reader', icon: GraduationCap, hash: '#reader/chapter-1' },
     { id: 'preface', label: 'Preface', icon: BookOpen, hash: '#preface' },
   ];
+
+  if (user?.role === 'admin') {
+    navItems.push({ id: 'admin', label: 'Admin Panel', icon: Shield, hash: '#admin' });
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 text-white">
@@ -97,9 +101,24 @@ export default function Navbar({ currentView, user, progress, onNavigate, onLogo
               )}
             </div>
             <div className="text-left text-xs">
-              <div className="font-semibold text-slate-200 truncate max-w-[120px]">{user.name}</div>
-              <div className="text-slate-400 font-mono text-[10px] truncate max-w-[120px]" title={user.identifier || user.email || user.phone}>
-                {user.identifier || user.email || user.phone || 'Student'}
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-slate-200 truncate max-w-[100px]">{user.name}</span>
+                {user.role === 'admin' ? (
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-rose-500/20 to-purple-500/20 text-rose-300 border border-rose-500/40">
+                    Admin
+                  </span>
+                ) : user.role === 'reviewer' ? (
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                    Reviewer
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
+                    Student
+                  </span>
+                )}
+              </div>
+              <div className="text-slate-400 font-mono text-[10px] truncate max-w-[130px]" title={user.identifier || user.email || user.phone}>
+                {user.identifier || user.email || user.phone}
               </div>
             </div>
           </div>
