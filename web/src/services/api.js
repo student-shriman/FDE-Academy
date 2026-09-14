@@ -1,4 +1,4 @@
-// API client for FDE Academy with strict SQLite authentication
+// API client for AI Academy with SQLite authentication
 
 export async function apiSignUp(payload) {
   let res;

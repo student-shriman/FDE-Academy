@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "curriculum.db")
 
-app = FastAPI(title="FDE Academy API", version="1.0.0")
+app = FastAPI(title="AI Academy API", version="1.0.0")
 
 # Enable CORS for Vite dev server and production
 app.add_middleware(
