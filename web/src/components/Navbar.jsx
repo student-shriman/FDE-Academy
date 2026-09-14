@@ -1,15 +1,16 @@
 import React from 'react';
-import { BookOpen, Compass, ListTree, LogOut, GraduationCap, CheckCircle2, Layers } from 'lucide-react';
+import { BookOpen, Compass, ListTree, LogOut, GraduationCap, CheckCircle2, Layers, Sparkles } from 'lucide-react';
 
 export default function Navbar({ currentView, user, progress, onNavigate, onLogout }) {
-  if (!user || currentView === 'login') return null;
+  if (!user || currentView === 'login' || currentView === 'landing') return null;
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: Compass, hash: '#home' },
+    { id: 'home', label: 'Dashboard', icon: Compass, hash: '#home' },
     { id: 'courses', label: 'Courses', icon: Layers, hash: '#courses' },
     { id: 'contents', label: 'FDE Syllabus', icon: ListTree, hash: '#contents' },
     { id: 'reader', label: 'Phase 0 Reader', icon: GraduationCap, hash: '#reader/chapter-1' },
     { id: 'preface', label: 'Preface', icon: BookOpen, hash: '#preface' },
+    { id: 'landing', label: 'Explore', icon: Sparkles, hash: '#landing' },
   ];
 
   return (

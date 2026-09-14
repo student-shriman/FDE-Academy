@@ -33,7 +33,7 @@ const COUNTRY_CODES = [
   { code: 'custom', country: 'Custom Code', flag: '🌐' }
 ];
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onNavigate }) {
   const [isSignUp, setIsSignUp] = useState(false);
   
   // Registration Type: 'gmail' or 'phone'
@@ -160,6 +160,17 @@ export default function Login({ onLogin }) {
 
       <div className="max-w-md w-full relative z-10">
         
+        {/* Back to Homepage */}
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={() => onNavigate ? onNavigate('landing') : (window.location.hash = '')}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-xs font-medium text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer"
+          >
+            <span>&larr; Back to Homepage</span>
+          </button>
+        </div>
+
         {/* Header Branding */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-cyan-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold uppercase tracking-wider mb-4">

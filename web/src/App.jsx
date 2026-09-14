@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import CourseDetail from './pages/CourseDetail';
@@ -23,8 +24,22 @@ export default function App() {
   // Progress State from SQLite
   const [progress, setProgress] = useState(null);
 
-  // Routing State: 'login', 'home', 'courses', 'course-detail', 'preface', 'contents', 'reader'
-  const [currentView, setCurrentView] = useState('home');
+  // Routing State: 'landing', 'login', 'home', 'courses', 'course-detail', 'preface', 'contents', 'reader'
+  const [currentView, setCurrentView] = useState(() => {
+    try {
+      const hash = window.location.hash.replace('#', '') || '';
+      const saved = localStorage.getItem('fde_user');
+      const parsedUser = saved ? JSON.parse(saved) : null;
+      if (!parsedUser) {
+        return (hash === 'login' || hash === 'signup') ? 'login' : 'landing';
+      }
+      if (hash === 'landing') return 'landing';
+      return hash || 'home';
+    } catch {
+      return 'landing';
+    }
+  });
+
   const [activeChapterId, setActiveChapterId] = useState('chapter-1');
   const [selectedCourseId, setSelectedCourseId] = useState('ai-masterclass');
 
@@ -61,10 +76,16 @@ export default function App() {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') || '';
       if (!user) {
-        setCurrentView('login');
+        if (hash === 'login' || hash === 'signup') {
+          setCurrentView('login');
+        } else {
+          setCurrentView('landing');
+        }
         return;
       }
-      if (hash.startsWith('reader/')) {
+      if (hash === 'landing') {
+        setCurrentView('landing');
+      } else if (hash.startsWith('reader/')) {
         const cId = hash.replace('reader/', '');
         setActiveChapterId(cId || 'chapter-1');
         setCurrentView('reader');
@@ -108,8 +129,8 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-    window.location.hash = 'login';
-    setCurrentView('login');
+    window.location.hash = '';
+    setCurrentView('landing');
   };
 
   const navigateTo = (viewId) => {
@@ -117,6 +138,10 @@ export default function App() {
       window.location.hash = `reader/${activeChapterId}`;
     } else if (viewId === 'courses') {
       window.location.hash = 'courses';
+    } else if (viewId === 'landing') {
+      window.location.hash = 'landing';
+    } else if (viewId === 'login') {
+      window.location.hash = 'login';
     } else {
       window.location.hash = viewId;
     }
@@ -135,9 +160,20 @@ export default function App() {
     setCurrentView('course-detail');
   };
 
-  // If unauthenticated, show Login
+  // View: Landing Page (Available to both visitors and logged in users who explore)
+  if (currentView === 'landing') {
+    return (
+      <Landing
+        onNavigate={navigateTo}
+        onSelectCourse={handleSelectCourse}
+        user={user}
+      />
+    );
+  }
+
+  // View: Login/Sign-Up for unauthenticated visitors
   if (!user || currentView === 'login') {
-    return <Login onLogin={handleLogin} />;
+    return <Login onLogin={handleLogin} onNavigate={navigateTo} />;
   }
 
   return (
