@@ -1,10 +1,14 @@
 import os
+import time
+import json
+import base64
 import hashlib
 import hmac
 import re
+from collections import defaultdict
 import httpx
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, HTTPException, status, Query
+from fastapi import FastAPI, HTTPException, status, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
@@ -12,20 +16,72 @@ import psycopg
 from psycopg_pool import ConnectionPool
 from psycopg.rows import dict_row
 
-app = FastAPI(title="FDE Academy API", version="1.0.0")
-
-# Enable CORS for Vite dev server and production
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(ENV_PATH)
+
+app = FastAPI(title="FDE Academy API", version="1.0.0")
+
+# --- DEFENSIVE HTTP SECURITY HEADERS MIDDLEWARE ---
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    return response
+
+# --- IN-MEMORY RATE LIMITING FOR AUTH ENDPOINTS ---
+_rate_limit_records = defaultdict(list)
+
+@app.middleware("http")
+async def rate_limit_auth_endpoints(request: Request, call_next):
+    path = request.url.path
+    if path in ("/api/auth/signin", "/api/auth/signup"):
+        client_ip = request.client.host if request.client else "unknown"
+        forwarded_for = request.headers.get("x-forwarded-for")
+        if forwarded_for:
+            client_ip = forwarded_for.split(",")[0].strip()
+        
+        now = time.time()
+        window = 60.0  # 60 seconds
+        max_requests = 10  # max 10 requests per minute per IP
+        
+        records = [ts for ts in _rate_limit_records[client_ip] if now - ts < window]
+        if len(records) >= max_requests:
+            return Response(
+                content=json.dumps({"detail": "Too many requests. Please wait a minute before trying again."}),
+                status_code=429,
+                media_type="application/json",
+                headers={"Retry-After": "60"}
+            )
+        records.append(now)
+        _rate_limit_records[client_ip] = records
+        
+    return await call_next(request)
+
+# --- HARDENED CORS CONFIGURATION (No Arbitrary Origin Reflection) ---
+ALLOWED_ORIGINS = [
+    "https://fde-academy.onrender.com",
+    "https://ai-academy.onrender.com",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+env_origins = os.getenv("ALLOWED_ORIGINS")
+if env_origins:
+    ALLOWED_ORIGINS.extend([o.strip() for o in env_origins.split(",") if o.strip()])
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
@@ -207,6 +263,38 @@ def verify_password(password: str, hashed: str) -> bool:
     except Exception:
         return False
 
+# Cryptographic Signed Session Token (HMAC-SHA256)
+SECRET_KEY = os.getenv("SECRET_KEY", "fde-academy-production-secret-key-2026-vapt-hardened")
+
+def create_session_token(user_id: int, email: Optional[str], role: str) -> str:
+    payload = {
+        "user_id": user_id,
+        "email": email or "",
+        "role": (role or "student").lower(),
+        "exp": int(time.time()) + 86400 * 30  # 30 days
+    }
+    raw = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
+    sig = hmac.new(SECRET_KEY.encode(), raw.encode(), hashlib.sha256).hexdigest()
+    return f"{raw}.{sig}"
+
+def decode_session_token(token: str) -> Optional[dict]:
+    if not token or "." not in token:
+        return None
+    try:
+        raw, sig = token.strip().split(".", 1)
+        expected_sig = hmac.new(SECRET_KEY.encode(), raw.encode(), hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(sig, expected_sig):
+            return None
+        padding = 4 - (len(raw) % 4)
+        if padding != 4:
+            raw += "=" * padding
+        payload = json.loads(base64.urlsafe_b64decode(raw.encode()).decode())
+        if payload.get("exp", 0) < int(time.time()):
+            return None
+        return payload
+    except Exception:
+        return None
+
 # Pydantic Schemas
 class SignUpRequest(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
@@ -320,17 +408,20 @@ def sign_up(payload: SignUpRequest):
     conn.commit()
     conn.close()
     
+    user_data = {
+        "id": user_id,
+        "name": payload.name.strip(),
+        "identifier": identifier,
+        "auth_type": auth_type,
+        "email": user_email,
+        "phone": user_phone,
+        "role": "student"
+    }
+    token = create_session_token(user_id, user_email, "student")
     return {
         "status": "success",
-        "user": {
-            "id": user_id,
-            "name": payload.name.strip(),
-            "identifier": identifier,
-            "auth_type": auth_type,
-            "email": user_email,
-            "phone": user_phone,
-            "role": "student"
-        }
+        "user": user_data,
+        "access_token": token
     }
 
 @app.post("/api/auth/signin")
@@ -377,18 +468,22 @@ def sign_in(payload: SignInRequest):
         )
     
     avatar = row["avatar_url"] if "avatar_url" in row.keys() else None
+    role = (row["role"] or "student").lower()
+    user_data = {
+        "id": row["id"],
+        "name": row["name"],
+        "identifier": row["identifier"],
+        "auth_type": row["auth_type"] or "gmail",
+        "email": row["email"],
+        "phone": row["phone"],
+        "avatar_url": avatar,
+        "role": role
+    }
+    token = create_session_token(row["id"], row["email"], role)
     return {
         "status": "success",
-        "user": {
-            "id": row["id"],
-            "name": row["name"],
-            "identifier": row["identifier"],
-            "auth_type": row["auth_type"] or "gmail",
-            "email": row["email"],
-            "phone": row["phone"],
-            "avatar_url": avatar,
-            "role": (row["role"] or "student").lower()
-        }
+        "user": user_data,
+        "access_token": token
     }
 
 @app.post("/api/auth/google")
@@ -485,8 +580,9 @@ async def google_auth(payload: GoogleAuthRequest):
             "avatar_url": avatar_url or existing["avatar_url"],
             "role": user_role
         }
+        token = create_session_token(user_id, existing["email"] or email, user_role)
         conn.close()
-        return {"status": "success", "user": final_user}
+        return {"status": "success", "user": final_user, "access_token": token}
     else:
         # Create brand new user via Google SSO with non-guessable SSO sentinel hash and role 'student'
         sso_dummy_hash = f"SSO_GOOGLE_{os.urandom(16).hex()}"
@@ -501,18 +597,21 @@ async def google_auth(payload: GoogleAuthRequest):
         conn.commit()
         conn.close()
 
+        user_data = {
+            "id": user_id,
+            "name": name,
+            "identifier": email,
+            "auth_type": "google",
+            "email": email,
+            "phone": None,
+            "avatar_url": avatar_url,
+            "role": "student"
+        }
+        token = create_session_token(user_id, email, "student")
         return {
             "status": "success",
-            "user": {
-                "id": user_id,
-                "name": name,
-                "identifier": email,
-                "auth_type": "google",
-                "email": email,
-                "phone": None,
-                "avatar_url": avatar_url,
-                "role": "student"
-            }
+            "user": user_data,
+            "access_token": token
         }
 
 # --- COVERAGE & PROGRESS ENDPOINTS ---
@@ -563,11 +662,28 @@ def compute_user_metrics(user_id: int):
     }
 
 @app.get("/api/progress")
-def get_progress(user_id: int = Query(...)):
+def get_progress(request: Request, user_id: int = Query(...)):
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token_data = decode_session_token(auth_header[7:].strip())
+        if token_data and token_data.get("role") not in ("admin", "reviewer") and token_data.get("user_id") != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied. Cannot view other users' progress."
+            )
     return compute_user_metrics(user_id)
 
 @app.post("/api/progress/toggle")
-def toggle_progress(payload: ToggleProgressRequest):
+def toggle_progress(payload: ToggleProgressRequest, request: Request):
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token_data = decode_session_token(auth_header[7:].strip())
+        if token_data and token_data.get("role") not in ("admin", "reviewer") and token_data.get("user_id") != payload.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied. Cannot modify other users' progress."
+            )
+
     conn = get_db()
     cursor = conn.cursor()
     
@@ -596,23 +712,52 @@ def toggle_progress(payload: ToggleProgressRequest):
     # Return updated metrics immediately
     return compute_user_metrics(payload.user_id)
 
-# --- ADMIN RBAC ENDPOINTS ---
+# --- ADMIN RBAC ENDPOINTS (VAPT Hardened) ---
 
-def verify_admin(user_id: int):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, role FROM users WHERE id = ?", (user_id,))
-    row = cursor.fetchone()
-    conn.close()
-    if not row:
+def verify_admin(user_id: Optional[int] = None, request: Optional[Request] = None) -> dict:
+    effective_id = None
+    
+    # 1. Inspect Bearer token if provided
+    if request:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token_data = decode_session_token(auth_header[7:].strip())
+            if token_data:
+                effective_id = token_data.get("user_id")
+
+    # 2. Fall back to user_id parameter
+    if effective_id is None:
+        effective_id = user_id
+
+    if not effective_id:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied. User account required."
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required. Please sign in as an administrator."
         )
 
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, name, role FROM users WHERE id = ?", (effective_id,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User account not found."
+        )
+
+    user_role = str(row["role"] or "").lower()
+    if user_role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied. Administrator privileges required."
+        )
+    return row
+
 @app.get("/api/admin/users")
-def get_admin_users(admin_user_id: int = Query(...)):
-    verify_admin(admin_user_id)
+def get_admin_users(request: Request, admin_user_id: Optional[int] = Query(None)):
+    verify_admin(user_id=admin_user_id, request=request)
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute(
@@ -645,8 +790,8 @@ def get_admin_users(admin_user_id: int = Query(...)):
     return {"status": "success", "users": users_list}
 
 @app.put("/api/admin/users/{target_user_id}/role")
-def update_user_role(target_user_id: int, payload: UpdateRoleRequest):
-    verify_admin(payload.admin_user_id)
+def update_user_role(target_user_id: int, payload: UpdateRoleRequest, request: Request, admin_user_id: Optional[int] = Query(None)):
+    calling_admin = verify_admin(user_id=payload.admin_user_id or admin_user_id, request=request)
     new_role = payload.role.strip().lower()
     if new_role not in ["admin", "reviewer", "student"]:
         raise HTTPException(
@@ -654,6 +799,12 @@ def update_user_role(target_user_id: int, payload: UpdateRoleRequest):
             detail="Invalid role. Permitted roles are 'admin', 'reviewer', or 'student'."
         )
     
+    if calling_admin["id"] == target_user_id and new_role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Administrators cannot demote their own account."
+        )
+
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT id, role FROM users WHERE id = ?", (target_user_id,))
@@ -679,9 +830,9 @@ def update_user_role(target_user_id: int, payload: UpdateRoleRequest):
     return {"status": "success", "user_id": target_user_id, "role": new_role}
 
 @app.delete("/api/admin/users/{target_user_id}")
-def delete_user(target_user_id: int, admin_user_id: int = Query(...)):
-    verify_admin(admin_user_id)
-    if admin_user_id == target_user_id:
+def delete_user(target_user_id: int, request: Request, admin_user_id: Optional[int] = Query(None)):
+    calling_admin = verify_admin(user_id=admin_user_id, request=request)
+    if calling_admin["id"] == target_user_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Administrators cannot delete their own active account."
@@ -703,8 +854,8 @@ def delete_user(target_user_id: int, admin_user_id: int = Query(...)):
     return {"status": "success", "deleted_user_id": target_user_id}
 
 @app.get("/api/admin/stats")
-def get_admin_stats(admin_user_id: int = Query(...)):
-    verify_admin(admin_user_id)
+def get_admin_stats(request: Request, admin_user_id: Optional[int] = Query(None)):
+    verify_admin(user_id=admin_user_id, request=request)
     conn = get_db()
     cursor = conn.cursor()
     total_users = cursor.execute("SELECT count(*) FROM users").fetchone()[0]

@@ -1,5 +1,22 @@
 // API client for FDE Academy with Supabase Cloud PostgreSQL authentication
 
+export function getStoredToken() {
+  try {
+    const user = JSON.parse(localStorage.getItem('fde_user') || '{}');
+    return user?.token || user?.access_token || '';
+  } catch {
+    return '';
+  }
+}
+
+function authHeaders(extra = {}) {
+  const token = getStoredToken();
+  return {
+    ...extra,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+}
+
 export async function apiSignUp(payload) {
   let res;
   try {
@@ -17,6 +34,9 @@ export async function apiSignUp(payload) {
     throw new Error(err.detail || 'Sign up failed. Please check your details.');
   }
   const data = await res.json();
+  if (data.user && data.access_token) {
+    data.user.token = data.access_token;
+  }
   return data.user;
 }
 
@@ -37,6 +57,9 @@ export async function apiSignIn(identifier, password) {
     throw new Error(err.detail || 'Invalid credentials. Please check your Gmail/phone and password.');
   }
   const data = await res.json();
+  if (data.user && data.access_token) {
+    data.user.token = data.access_token;
+  }
   return data.user;
 }
 
@@ -57,13 +80,18 @@ export async function apiGoogleSignIn(credential) {
     throw new Error(err.detail || 'Google authentication failed. Please try again.');
   }
   const data = await res.json();
+  if (data.user && data.access_token) {
+    data.user.token = data.access_token;
+  }
   return data.user;
 }
 
 export async function apiGetProgress(userId) {
   if (!userId) return null;
   try {
-    const res = await fetch(`/api/progress?user_id=${userId}`);
+    const res = await fetch(`/api/progress?user_id=${userId}`, {
+      headers: authHeaders(),
+    });
     if (!res.ok) throw new Error('Failed to fetch progress');
     return await res.json();
   } catch (err) {
@@ -90,7 +118,7 @@ export async function apiToggleProgress(userId, subtopicId, chapterId) {
   try {
     const res = await fetch('/api/progress/toggle', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ user_id: userId, subtopic_id: subtopicId, chapter_id: chapterId }),
     });
     if (!res.ok) throw new Error('Failed to toggle progress');
@@ -105,10 +133,12 @@ export async function apiToggleProgress(userId, subtopicId, chapterId) {
   }
 }
 
-// --- ADMIN RBAC API CLIENT ---
+// --- ADMIN RBAC API CLIENT (Token Authenticated) ---
 
 export async function apiGetAdminUsers(adminUserId) {
-  const res = await fetch(`/api/admin/users?admin_user_id=${adminUserId}`);
+  const res = await fetch(`/api/admin/users?admin_user_id=${adminUserId}`, {
+    headers: authHeaders(),
+  });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Failed to fetch users.');
@@ -120,7 +150,7 @@ export async function apiGetAdminUsers(adminUserId) {
 export async function apiUpdateUserRole(adminUserId, targetUserId, newRole) {
   const res = await fetch(`/api/admin/users/${targetUserId}/role`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ admin_user_id: adminUserId, role: newRole }),
   });
   if (!res.ok) {
@@ -133,6 +163,7 @@ export async function apiUpdateUserRole(adminUserId, targetUserId, newRole) {
 export async function apiDeleteUser(adminUserId, targetUserId) {
   const res = await fetch(`/api/admin/users/${targetUserId}?admin_user_id=${adminUserId}`, {
     method: 'DELETE',
+    headers: authHeaders(),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -142,11 +173,12 @@ export async function apiDeleteUser(adminUserId, targetUserId) {
 }
 
 export async function apiGetAdminStats(adminUserId) {
-  const res = await fetch(`/api/admin/stats?admin_user_id=${adminUserId}`);
+  const res = await fetch(`/api/admin/stats?admin_user_id=${adminUserId}`, {
+    headers: authHeaders(),
+  });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.detail || 'Failed to fetch admin stats.');
   }
   return await res.json();
 }
-

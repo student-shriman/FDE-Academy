@@ -45,6 +45,13 @@ COPY server/ /app/server/
 # Copy built frontend static bundle from Stage 1 into /app/web/dist
 COPY --from=frontend-builder /app/web/dist /app/web/dist
 
+# Create non-root unprivileged system user for container security (VAPT Hardened)
+RUN addgroup --system --gid 1001 appgroup && \
+    adduser --system --uid 1001 --ingroup appgroup appuser && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
 # Expose port (defaults to 8000 for local docker, Render assigns $PORT at runtime)
 ENV PORT=8000
 EXPOSE 8000
